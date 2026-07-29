@@ -1,0 +1,64 @@
+/* ============================================================
+   JEM · SPACING, RADII, SHADOWS, MOTION
+   The JEM system is sober and document-led: square corners on
+   structural surfaces, restrained shadows, small radii reserved
+   for cards/chips. Layout is grid-driven with generous margins.
+   ============================================================ */
+:root {
+  /* --- Spacing scale (4px base) --- */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;   /* document page padding */
+  --space-16: 64px;   /* cover padding */
+  --space-20: 80px;
+
+  /* --- Radii ---
+     Structural surfaces (covers, dividers, report pages, the tricolour
+     rule, tables) are SQUARE. Radii apply only to chips, cards, buttons. */
+  --radius-none: 0;
+  --radius-sm:   4px;   /* chips, badges, thumbnails */
+  --radius-md:   6px;   /* buttons, stat cards */
+  --radius-lg:   8px;   /* business cards, soft panels */
+  --radius-pill: 999px;
+
+  /* --- Borders --- */
+  --border-width: 1px; /* @kind spacing */
+  --rule-weight:  2px;   /* @kind spacing */
+  --rule-weight-bold: 4px; /* @kind spacing */
+
+  /* --- Shadows ---
+     Cool, indigo-tinted, low. Used on lifted cards and document pages,
+     not on flat structural surfaces. */
+  --shadow-xs: 0 1px 4px rgba(20, 18, 40, 0.10);
+  --shadow-sm: 0 2px 9px rgba(20, 18, 40, 0.12);
+  --shadow-md: 0 2px 12px rgba(20, 18, 40, 0.22);
+  --shadow-lg: 0 6px 26px rgba(20, 18, 40, 0.26);
+
+  /* --- Layout --- */
+  --container-max: 1200px; /* @kind spacing */
+  --content-measure: 68ch;  /* @kind spacing */
+
+  /* --- Motion ---
+     Quiet and precise. Short fades and small position shifts; no bounce,
+     no overshoot. Reflects the factual, on-the-record tone. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* @kind other */
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --dur-fast:   120ms; /* @kind other */
+  --dur-normal: 200ms; /* @kind other */
+  --dur-slow:   320ms; /* @kind other */
+
+  /* Interaction conventions:
+     hover  → darken indigo one step / 90% opacity on dark
+     active → no scale shrink; settle to a darker step
+     focus  → 2px saffron outline, offset 2px */
+  --focus-ring: 2px solid var(--jem-saffron); /* @kind other */
+  --focus-offset: 2px; /* @kind spacing */
+}

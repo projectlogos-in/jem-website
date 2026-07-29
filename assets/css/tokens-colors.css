@@ -1,0 +1,77 @@
+/* ============================================================
+   JEM · COLOUR
+   Drawn from the supplied tricolour monogram on deep indigo.
+   Indigo carries surfaces; saffron + green are small, paired accents.
+   Alarm red is never used.
+   ============================================================ */
+:root {
+  /* --- Brand core --- */
+  --jem-indigo:        #2A2360; /* primary — surfaces, headings, ink-on-white */
+  --jem-saffron:       #DD9533; /* accent — the figure in focus, the exception */
+  --jem-saffron-text:  #9A6416; /* saffron for TEXT on light surfaces — ≥4.5:1 (WCAG AA); keep #DD9533 for rules, borders, fills */
+  --jem-green:         #5BAA47; /* accent — positive / completed measure */
+  --jem-white:         #FFFFFF; /* ground */
+
+  /* --- Indigo ramp (for hovers, borders, depth on dark surfaces) --- */
+  --jem-indigo-900:    #1A1540;
+  --jem-indigo-800:    #221C52;
+  --jem-indigo-700:    #2A2360; /* = base indigo */
+  --jem-indigo-600:    #383074;
+  --jem-indigo-500:    #4A4191;
+
+  /* --- Neutrals (cool, indigo-tinted) --- */
+  --jem-ink:           #1C1A2E; /* primary text on light */
+  --jem-slate:         #5B5870; /* secondary text, captions */
+  --jem-mist:          #848096; /* tertiary — hairline labels, decorative marks; NOT body-size text */
+  --jem-mist-text:     #6E6A80; /* darkened mist for metadata TEXT on light — ≥4.5:1 (WCAG AA) */
+  --jem-faint:         #A6A2B6; /* disabled, faint labels */
+  --jem-line:          #ECEAF3; /* panel fill / divider on light */
+  --jem-page:          #F7F6FA; /* page background, zebra rows */
+
+  /* --- Accent tints (for soft fills, never large fields) --- */
+  --jem-saffron-tint:  #FBF1E1;
+  --jem-green-tint:    #EBF4E8;
+  --jem-indigo-tint:   #ECEAF3;
+
+  /* --- On-indigo text --- */
+  --jem-on-indigo:        #FFFFFF;
+  --jem-on-indigo-muted:  #CBC8DD;
+  --jem-on-indigo-faint:  #8480A0;
+
+  /* ============================================================
+     SEMANTIC ALIASES — prefer these in components
+     ============================================================ */
+  --color-bg:             var(--jem-page);
+  --color-surface:        var(--jem-white);
+  --color-surface-sunken: var(--jem-page);
+  --color-surface-dark:   var(--jem-indigo);
+
+  --text-strong:          var(--jem-indigo);  /* headings */
+  --text-body:            var(--jem-ink);     /* body copy */
+  --text-secondary:       var(--jem-slate);
+  --text-muted:           var(--jem-mist-text); /* text role — darkened for contrast; decorative uses keep --jem-mist */
+  --text-faint:           var(--jem-faint);
+  --text-on-dark:         var(--jem-on-indigo);
+  --text-on-dark-muted:   var(--jem-on-indigo-muted);
+
+  --border-default:       rgba(42, 35, 96, 0.14);
+  --border-strong:        rgba(42, 35, 96, 0.20);
+  --border-rule:          #2A2360;
+  --border-on-dark:       rgba(255, 255, 255, 0.20);
+
+  --accent-focus:         var(--jem-saffron); /* the figure in focus */
+  --accent-positive:      var(--jem-green);   /* completed / positive */
+
+  /* Links */
+  --link:                 var(--jem-indigo);
+  --link-hover:           var(--jem-indigo-600);
+  --link-on-dark:         var(--jem-on-indigo);
+  --link-on-dark-hover:   var(--jem-saffron);
+
+  /* Signature tricolour rule (saffron | green split) */
+  --rule-tricolour: linear-gradient(90deg, var(--jem-saffron) 50%, var(--jem-green) 50%);
+  /* Three-part variant (indigo | saffron | green) used on stationery */
+  --rule-tricolour-3: linear-gradient(90deg,
+      var(--jem-indigo) 60%, var(--jem-saffron) 60%,
+      var(--jem-saffron) 80%, var(--jem-green) 80%);
+}

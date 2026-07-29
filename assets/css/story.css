@@ -1,0 +1,273 @@
+/* ============================================================
+   JEM — story.html ("Two months in the record")
+   Evidence-room treatment: the one page that runs dark, matching
+   the tracker's dark theme. Page bg #14122B, surfaces #1B1836,
+   text #E6E3F4. Square structural corners, tricolour rule, quiet
+   motion — the design-system rules hold; only the ground flips.
+   Loaded by story.html only (linked from the page body).
+   ============================================================ */
+
+body.story-dark {
+  background: #14122B;
+  color: #E6E3F4;
+}
+body.story-dark main a { color: #E6E3F4; }
+body.story-dark main a:hover { color: #fff; }
+
+/* --- Hero ----------------------------------------------------------- */
+.story-hero {
+  background: var(--jem-indigo);
+  border-bottom: 1px solid rgba(230, 227, 244, 0.14);
+  padding: 72px 0 56px;
+}
+.story-hero h1 {
+  font: 800 clamp(34px, 5vw, 54px)/1.08 var(--font-heading);
+  letter-spacing: -0.015em;
+  color: #fff;
+  margin: 10px 0 16px;
+  max-width: 720px;
+}
+.story-hero .lead {
+  font: 400 clamp(16px, 2vw, 19px)/1.6 var(--font-serif, 'Source Serif 4', serif);
+  color: rgba(230, 227, 244, 0.86);
+  max-width: 640px;
+  margin: 0 0 22px;
+}
+.story-hero .tricolour-rule { margin-bottom: 18px; }
+.story-meta {
+  font: 600 12px/1.6 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(230, 227, 244, 0.62);
+  margin: 0;
+}
+
+/* --- Scrollytelling frame ------------------------------------------- */
+.scrolly {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 30fr) minmax(0, 35fr);
+  gap: 0;
+  align-items: start;
+}
+/* Map panel: sticky, full remaining viewport under the 84px header. */
+.scrolly-map {
+  order: 2;
+  position: sticky;
+  top: 84px;
+  height: calc(100vh - 84px);
+  height: calc(100dvh - 84px);
+  background: #1B1836;
+  border-left: 1px solid rgba(230, 227, 244, 0.14);
+  overflow: hidden;
+}
+#story-map { position: absolute; inset: 0; }
+#story-map canvas { outline: none; }
+
+/* Fallback card shown until the live map is up (and left in place if it
+   never comes up — file://, offline, script blocked). */
+.map-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+  background: #1B1836;
+}
+.map-fallback[hidden] { display: none; }
+.map-fallback > div { max-width: 380px; }
+.map-fallback img { width: 56px; height: 56px; margin: 0 auto 14px; opacity: 0.9; }
+.map-fallback h2 { font: 800 18px/1.3 var(--font-heading); color: #fff; margin: 0 0 10px; }
+.map-fallback .tricolour-rule { margin: 0 auto 12px; }
+.map-fallback p { font: 400 14px/1.6 var(--font-sans); color: rgba(230, 227, 244, 0.72); margin: 0; }
+
+.map-legend {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 6;
+  background: rgba(27, 24, 54, 0.92);
+  border: 1px solid rgba(230, 227, 244, 0.14);
+  padding: 10px 14px;
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+.scrolly-map.is-live .map-legend { display: grid; }
+.map-legend span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 600 10.5px/1.5 var(--font-sans);
+  letter-spacing: 0.02em;
+  color: rgba(230, 227, 244, 0.8);
+  white-space: nowrap;
+}
+.map-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--dot, #848096);
+  flex: none;
+}
+
+/* --- Steps ----------------------------------------------------------- */
+.scrolly-steps {
+  order: 1;
+  padding: 12vh 0 20vh;
+}
+.story-step {
+  min-height: 68vh;
+  display: flex;
+  align-items: center;
+  padding: 6vh clamp(20px, 5vw, 64px);
+}
+.step-card {
+  background: #1B1836;
+  border: 1px solid rgba(230, 227, 244, 0.14);
+  border-left: 4px solid rgba(230, 227, 244, 0.2);
+  padding: clamp(22px, 3vw, 34px);
+  max-width: 560px;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.story-step.is-active .step-card {
+  border-left-color: var(--jem-saffron);
+  box-shadow: 0 6px 26px rgba(10, 8, 24, 0.5);
+}
+.step-card .kicker { color: var(--jem-saffron); }
+.step-card .kicker::before { background: var(--jem-saffron); }
+.step-card h2 {
+  font: 800 clamp(21px, 2.6vw, 27px)/1.2 var(--font-heading);
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin: 8px 0 14px;
+}
+.step-card p {
+  font: 400 15.5px/1.7 var(--font-serif, 'Source Serif 4', serif);
+  color: rgba(230, 227, 244, 0.88);
+  margin: 0 0 14px;
+}
+.step-card p:last-child { margin-bottom: 0; }
+.step-card strong { color: #fff; }
+.step-card .cat-badge { color: rgba(230, 227, 244, 0.85); }
+
+/* Figures row inside a step */
+.step-figs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 4px 0 16px;
+}
+.step-figs .fig {
+  border: 1px solid rgba(230, 227, 244, 0.14);
+  padding: 10px 14px;
+  min-width: 96px;
+}
+.step-figs .v { font: 800 24px/1.1 var(--font-heading); color: var(--jem-saffron); }
+.step-figs .v.plain { color: #fff; }
+.step-figs .l {
+  font: 600 10.5px/1.4 var(--font-sans);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(230, 227, 244, 0.62);
+  margin-top: 4px;
+}
+
+/* Week / state bars — figures live in text; bars are reinforcement. */
+.bar-list { margin: 4px 0 16px; padding: 0; list-style: none; }
+.bar-list li {
+  display: grid;
+  grid-template-columns: 118px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+  font: 600 12px/1.4 var(--font-sans);
+  color: rgba(230, 227, 244, 0.8);
+}
+.bar-list .bar { height: 8px; background: rgba(230, 227, 244, 0.1); position: relative; }
+.bar-list .bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--w, 0%);
+  background: var(--jem-saffron);
+}
+.bar-list .n { text-align: right; color: #fff; font-weight: 800; }
+
+/* A cited record inside a step */
+.step-record {
+  border: 1px solid rgba(230, 227, 244, 0.14);
+  border-left: 3px solid var(--rec, var(--jem-saffron));
+  padding: 12px 16px;
+  margin: 0 0 12px;
+  text-decoration: none;
+  display: block;
+  transition: background 150ms ease;
+}
+a.step-record:hover { background: rgba(230, 227, 244, 0.05); }
+.step-record .sr-meta {
+  font: 700 11px/1.5 var(--font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(230, 227, 244, 0.62);
+  display: block;
+  margin-bottom: 5px;
+}
+.step-record .sr-meta b { color: #fff; }
+.step-record .sr-sum {
+  font: 400 14px/1.6 var(--font-serif, 'Source Serif 4', serif);
+  color: rgba(230, 227, 244, 0.88);
+  display: block;
+}
+.step-record .sr-link {
+  font: 700 11.5px/1.4 var(--font-sans);
+  color: var(--jem-saffron);
+  display: block;
+  margin-top: 7px;
+}
+
+.step-source {
+  font: 400 12px/1.6 var(--font-sans);
+  color: rgba(230, 227, 244, 0.55);
+  margin-top: 16px !important;
+}
+
+/* --- Close ------------------------------------------------------------ */
+.story-close {
+  border-top: 1px solid rgba(230, 227, 244, 0.14);
+  background: #1B1836;
+  padding: 64px 0 72px;
+}
+.story-close h2 { font: 800 clamp(24px, 3vw, 32px)/1.2 var(--font-heading); color: #fff; margin: 8px 0 14px; }
+.story-close p { font: 400 16px/1.7 var(--font-serif, 'Source Serif 4', serif); color: rgba(230, 227, 244, 0.86); max-width: 620px; }
+.story-close .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+body.story-dark .btn-outline {
+  border-color: rgba(230, 227, 244, 0.4);
+  color: #fff;
+}
+body.story-dark .btn-outline:hover { background: rgba(230, 227, 244, 0.08); color: #fff; }
+
+/* --- Mobile: map becomes a sticky band; steps scroll over it. -------- */
+@media (max-width: 900px) {
+  .scrolly { display: block; }
+  .scrolly-map {
+    position: sticky;
+    top: 64px;
+    height: 42vh;
+    height: 42dvh;
+    border-left: 0;
+    border-bottom: 1px solid rgba(230, 227, 244, 0.14);
+    z-index: 1;
+  }
+  .map-legend { display: none !important; }
+  .scrolly-steps { position: relative; z-index: 2; padding: 6vh 0 12vh; }
+  .story-step { min-height: 58vh; padding: 5vh 18px; }
+  .step-card { max-width: none; }
+}
+
+/* Reduced motion: no transitions on cards (map motion is handled in JS). */
+@media (prefers-reduced-motion: reduce) {
+  .step-card, .step-record { transition: none; }
+}

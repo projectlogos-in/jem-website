@@ -1,0 +1,27 @@
+/* ============================================================
+   JEM · BASE
+   The few global element defaults the system needs beyond tokens.
+   Kept minimal — components style themselves inline; this only sets
+   sensible document defaults (links, selection) so bare HTML that
+   consumers write looks on-brand out of the box.
+   ============================================================ */
+
+a {
+  color: var(--link, #2A2360);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--dur-fast, 120ms) var(--ease-standard, cubic-bezier(.2,0,0,1));
+}
+a:hover { color: var(--link-hover, #383074); }
+a:focus-visible {
+  outline: var(--focus-ring, 2px solid #DD9533);
+  outline-offset: var(--focus-offset, 2px);
+  border-radius: 2px;
+}
+
+/* Links on indigo/dark surfaces: opt in with class="on-dark" on a wrapper */
+.on-dark a { color: var(--link-on-dark, #fff); }
+.on-dark a:hover { color: var(--link-on-dark-hover, #DD9533); }
+
+::selection { background: rgba(221, 149, 51, 0.28); }

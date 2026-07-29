@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hate Incident Tracker · Justice and Empowerment of Minorities</title>
+<meta name="description" content="A live, source-linked map and record of documented hate incidents against religious minorities in India, maintained by JEM (Justice and Empowerment of Minorities), an initiative of the Jamiat Ulama-i-Hind.">
+<meta name="theme-color" content="#2A2360">
+<link rel="icon" href="assets/logos/jem-mark.png">
+<meta property="og:title" content="Hate Incident Tracker · JEM">
+<meta property="og:description" content="A live, source-linked record of documented hate incidents against religious minorities in India. Filterable, citable, exportable.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Justice and Empowerment of Minorities">
+<meta property="og:url" content="https://jem.org.in/tracker/">
+<meta property="og:image" content="https://jem.org.in/tracker/assets/og-card.png">
+<meta property="og:image:alt" content="JEM — Justice and Empowerment of Minorities. Documenting hate crimes against religious minorities in India.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="assets/vendor/maplibre-gl.css">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/styles.css">
+
+<script>
+/* Theme + language before first paint, so nothing flashes. The URL hash wins
+   (a shared Urdu link opens in Urdu), then the visitor's saved choice. */
+(function () {
+  var hash = new URLSearchParams(location.hash.slice(1));
+  var theme = localStorage.getItem('jem-theme');
+  if (theme === 'dark' || (!theme && matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.dataset.theme = 'dark';
+  }
+  var lang = hash.get('lang') || localStorage.getItem('jem-lang');
+  if (lang === 'ur' || lang === 'hi') {
+    document.documentElement.lang = lang;
+    if (lang === 'ur') document.documentElement.dir = 'rtl';
+  }
+})();
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#list" data-i18n="skipToList">Skip to incident list</a>
+
+<div class="app">
+
+  <!-- ============================================================
+       Sidebar — identity, live status, counters, filters, results
+       ============================================================ -->
+  <aside class="sidebar" id="sidebar" aria-label="Filters and incident list">
+
+    <button class="sheet-grab" id="sheet-grab" aria-expanded="false" aria-controls="sidebar"
+            aria-label="Expand incident list"></button>
+
+    <header class="masthead">
+      <div class="masthead-top">
+        <img class="masthead-mark" src="assets/logos/jem-mark.png" alt=""
+             onerror="this.style.display='none'">
+        <div>
+          <h1 id="app-title" data-i18n="title">Hate Incident Tracker</h1>
+          <span class="org" id="app-org" data-i18n="org">Justice and Empowerment of Minorities</span>
+        </div>
+        <div class="masthead-actions">
+          <button class="ghost-btn" id="btn-lang" lang="ur">اردو</button>
+          <button class="ghost-btn" id="btn-theme" aria-label="Switch theme">◐</button>
+        </div>
+      </div>
+      <div class="tricolour-rule"></div>
+    </header>
+
+    <div class="status" id="status" data-state="loading" role="status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span id="status-text">Loading incidents…</span>
+      <button class="refresh" id="refresh" data-i18n="refresh" title="Fetch the latest rows now">Refresh</button>
+    </div>
+
+    <div class="counters">
+      <div class="counter">
+        <span class="n" id="c-total">—</span>
+        <span class="l" id="l-total" data-i18n="incidents">Incidents</span>
+      </div>
+      <div class="counter">
+        <span class="n" id="c-states">—</span>
+        <span class="l" id="l-states" data-i18n="states">States</span>
+      </div>
+      <div class="counter">
+        <span class="n" id="c-period">—</span>
+        <span class="l" id="l-period" data-i18n="period">Period</span>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/>
+        </svg>
+        <input class="search" id="search" type="search" autocomplete="off"
+               placeholder="Search place, name, description…" aria-label="Search incidents">
+      </div>
+
+      <div class="presets" id="presets" role="group" aria-label="Quick date ranges"></div>
+
+      <div class="filter-group" id="fg-category">
+        <div class="kicker"><span data-i18n="category">Category</span> <button class="clear" data-clear="category" data-i18n="clear">Clear</button></div>
+        <div class="chips" id="chips-category"></div>
+      </div>
+
+      <div class="filter-group" id="fg-state">
+        <div class="kicker"><span data-i18n="state">State</span> <button class="clear" data-clear="state" data-i18n="clear">Clear</button></div>
+        <div class="chips" id="chips-state"></div>
+      </div>
+
+      <div class="filter-group" id="fg-minority">
+        <div class="kicker"><span data-i18n="community">Community</span> <button class="clear" data-clear="minority" data-i18n="clear">Clear</button></div>
+        <div class="chips" id="chips-minority"></div>
+      </div>
+
+      <div class="filter-group" id="fg-date">
+        <div class="kicker"><span data-i18n="dateRange">Date range</span> <button class="clear" data-clear="date" data-i18n="clear">Clear</button></div>
+        <div class="dates">
+          <input type="date" id="date-from" aria-label="From date">
+          <span id="date-to-word" data-i18n="toWord">to</span>
+          <input type="date" id="date-to" aria-label="To date">
+        </div>
+      </div>
+    </div>
+
+    <div class="list-head" id="list-head">
+      <span class="kicker" aria-live="polite"><span class="count" id="result-count">0</span> <span data-i18n="shown">shown</span></span>
+      <button class="clear-all" id="clear-all" data-i18n="clearAll">Clear all filters</button>
+      <button class="sort" id="sort" data-i18n="newestFirst">Newest first</button>
+    </div>
+
+    <div class="list" id="list" tabindex="-1"></div>
+
+    <footer class="side-foot">
+      <div class="links">
+        <button id="btn-about" data-i18n="aboutData">About this data</button>
+        <button id="btn-cite" data-i18n="citeThis">Cite</button>
+        <button id="btn-export" data-i18n="export">Export</button>
+        <button id="btn-share" data-i18n="share">Share</button>
+      </div>
+      <div class="hint" id="kbd-hint" data-i18n="keyboardHint">Tip: ↑↓ move through the list · Enter opens · Esc closes · / searches</div>
+    </footer>
+  </aside>
+
+  <!-- ============================================================
+       Main pane — toolbar + map | trends, detail card
+       ============================================================ -->
+  <div class="main-pane" id="main">
+
+    <div class="embed-bar">
+      <img src="assets/logos/jem-mark.png" alt="">
+      <div>
+        <span class="t" data-i18n="title">Hate Incident Tracker</span>
+        <span class="o"> · JEM</span>
+      </div>
+      <a id="embed-open" href="index.html" target="_blank" rel="noopener" data-i18n="openFull">Open the full tracker</a>
+    </div>
+
+    <div class="pane-toolbar">
+      <div class="seg" role="group" aria-label="View">
+        <button id="view-map" aria-pressed="true" data-i18n="map">Map</button>
+        <button id="view-trends" aria-pressed="false" data-i18n="trends">Trends</button>
+      </div>
+      <div class="toolbar-right" id="map-tools">
+        <button class="map-btn" id="btn-reset" data-i18n="resetView">Reset view</button>
+        <button class="map-btn" id="btn-cluster" aria-pressed="true" data-i18n="cluster">Cluster</button>
+        <button class="map-btn" id="btn-heat" aria-pressed="false" data-i18n="heat">Density</button>
+        <button class="map-btn" id="btn-states" aria-pressed="false" data-i18n="statesView">States</button>
+      </div>
+    </div>
+
+    <div class="map-panel" id="map-panel">
+      <div id="map" aria-label="Incident map"></div>
+
+      <div class="map-legend" id="map-legend">
+        <div class="kicker" id="legend-title">Category</div>
+        <div id="legend-items"></div>
+        <div class="legend-note" id="legend-note"></div>
+      </div>
+
+      <div class="timeline" id="timeline" hidden>
+        <div class="tl-head">
+          <span data-i18n="timelineLabel">Timeline — drag to filter by date</span>
+          <span class="tl-range" id="tl-range"></span>
+          <button class="tl-clear" id="tl-clear" data-i18n="brushClear">Clear range</button>
+        </div>
+        <div id="tl-chart"></div>
+      </div>
+
+      <div class="data-note" id="data-note" hidden>
+        <b data-i18n="noteTitle">A record, not a census.</b>
+        <span data-i18n="noteBody">Every entry is source-linked and dated. Documented incidents undercount reality — see how this data is made.</span>
+        <div class="actions">
+          <button id="note-method" data-i18n="methodology">Methodology</button>
+          <button id="note-dismiss" data-i18n="dismiss">Dismiss</button>
+        </div>
+      </div>
+
+      <!-- Incident detail card -->
+      <article class="card" id="card" role="region" aria-labelledby="card-place" tabindex="-1">
+        <div class="card-head">
+          <button class="card-close" id="card-close" aria-label="Close incident detail">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M1 1l10 10M11 1L1 11"/>
+            </svg>
+          </button>
+          <div class="card-cat" id="card-cat"></div>
+          <h2 id="card-place"></h2>
+          <div class="card-sub" id="card-sub"></div>
+        </div>
+        <div class="card-body" id="card-body"></div>
+        <div class="card-foot">
+          <span id="card-disclaimer"></span>
+          <div class="card-actions">
+            <button class="secondary" id="card-link" data-i18n="copyLink">Copy link</button>
+            <button id="card-locate" data-i18n="showOnMap">Show on map</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="trends-panel" id="trends-panel" hidden>
+      <div class="trends-inner" id="trends-inner"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Dialogs -->
+<div class="dialog-backdrop" id="dlg-about" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-about-title">
+    <div class="dialog-head">
+      <h2 id="dlg-about-title" data-i18n="aboutData">About this data</h2>
+      <button class="dialog-close" data-close="dlg-about" aria-label="Close">✕</button>
+    </div>
+    <div class="dialog-body" id="dlg-about-body"></div>
+  </div>
+</div>
+
+<div class="dialog-backdrop" id="dlg-export" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-export-title">
+    <div class="dialog-head">
+      <h2 id="dlg-export-title" data-i18n="export">Export</h2>
+      <button class="dialog-close" data-close="dlg-export" aria-label="Close">✕</button>
+    </div>
+    <div class="dialog-body" id="dlg-export-body"></div>
+  </div>
+</div>
+
+<div class="dialog-backdrop" id="dlg-cite" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-cite-title">
+    <div class="dialog-head">
+      <h2 id="dlg-cite-title" data-i18n="citeThis">Cite this tracker</h2>
+      <button class="dialog-close" data-close="dlg-cite" aria-label="Close">✕</button>
+    </div>
+    <div class="dialog-body" id="dlg-cite-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="chart-tip" id="chart-tip" hidden></div>
+
+<script src="assets/vendor/maplibre-gl.js"></script>
+
+<script>
+/* Over file:// the browser blocks fetch of local JSON, so load the bundled
+   script copies of the snapshot instead. Served over http(s) they are
+   skipped and the page fetches data/incidents.json — half the payload. */
+if (location.protocol === 'file:') {
+  document.write('<script src="data/incidents.js"><\/script>');
+  document.write('<script src="data/geocache.js"><\/script>');
+  document.write('<script src="data/india-states.js"><\/script>');
+}
+</script>
+
+<script src="assets/config.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

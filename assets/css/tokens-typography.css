@@ -1,0 +1,72 @@
+/* ============================================================
+   JEM · TYPOGRAPHY
+   Two families. Archivo for everything structural (display, headings,
+   labels, UI, data). Source Serif 4 for sustained reading (report body,
+   briefs, correspondence, pull quotes).
+   ============================================================ */
+:root {
+  /* --- Families --- */
+  --font-sans:  'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+
+  /* --- Indic script families ---
+     Matched sans (structural) + serif (reading) per script, mirroring the
+     Latin Archivo / Source Serif 4 pairing. Fall back through the Latin
+     families so mixed-script strings never lose a glyph. */
+  --font-deva:       'Noto Sans Devanagari', 'Archivo', sans-serif;      /* Hindi — UI, headings */
+  --font-deva-serif: 'Noto Serif Devanagari', 'Source Serif 4', serif;   /* Hindi — reading body */
+  --font-beng:       'Noto Sans Bengali', 'Archivo', sans-serif;         /* Assamese & Bengali — UI, headings */
+  --font-beng-serif: 'Noto Serif Bengali', 'Source Serif 4', serif;      /* Assamese & Bengali — reading body */
+  --font-urdu:       'Noto Nastaliq Urdu', 'Source Serif 4', serif;      /* Urdu (RTL) — headings & body */
+
+
+  --font-display: var(--font-sans); /* wordmark, hero, cover titles */
+  --font-heading: var(--font-sans);
+  --font-ui:      var(--font-sans);
+  --font-body:    var(--font-serif);
+  --font-meta:    var(--font-sans); /* dates, refs, captions, data */
+
+  /* --- Weights --- */
+  --fw-regular:  400; /* @kind font */
+  --fw-medium:   500; /* @kind font */
+  --fw-semibold: 600; /* @kind font */
+  --fw-bold:     700; /* @kind font */
+  --fw-display:  800; /* @kind font */
+  --fw-black:    900; /* @kind font */
+
+  /* --- Type scale (px) ---
+     Display sizes use Archivo 800; body uses Source Serif 4 400. */
+  --fs-display-xl: 76px;  /* cover hero */
+  --fs-display-l:  46px;  /* page H1 / big stat */
+  --fs-display-m:  38px;  /* report cover title */
+  --fs-h1:         36px;
+  --fs-h2:         27px;
+  --fs-h3:         22px;
+  --fs-h4:         18px;
+  --fs-body-l:     17px;  /* lead paragraph */
+  --fs-body:       15px;  /* default reading size */
+  --fs-body-s:     13.5px;
+  --fs-meta:       12px;  /* metadata, captions */
+  --fs-kicker:     11px;  /* uppercase eyebrow / label */
+  --fs-micro:      9px;   /* footnote labels */
+
+  /* --- Line heights --- */
+  --lh-display: 1.0;  /* @kind font */
+  --lh-heading: 1.12; /* @kind font */
+  --lh-snug:    1.3;  /* @kind font */
+  --lh-body:    1.6;  /* @kind font */
+  --lh-ui:      1.5;  /* @kind font */
+
+  /* --- Letter-spacing --- */
+  --ls-display: -0.01em; /* @kind font */
+  --ls-tight:   -0.005em; /* @kind font */
+  --ls-normal:  0;        /* @kind font */
+  --ls-kicker:  0.16em;  /* @kind font */
+  --ls-label:   0.10em;  /* @kind font */
+
+  /* --- Semantic roles --- */
+  --text-display:  var(--fw-display) var(--fs-display-l)/var(--lh-display) var(--font-display); /* @kind font */
+  --text-h1:       var(--fw-display) var(--fs-h1)/var(--lh-heading) var(--font-heading); /* @kind font */
+  --text-h2:       var(--fw-bold) var(--fs-h2)/var(--lh-heading) var(--font-heading); /* @kind font */
+  --text-kicker:   var(--fw-bold) var(--fs-kicker)/1 var(--font-meta); /* @kind font */
+}

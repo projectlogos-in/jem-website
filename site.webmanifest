@@ -1,0 +1,20 @@
+{
+  "name": "Justice and Empowerment of Minorities (JEM)",
+  "short_name": "JEM",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#2A2360",
+  "background_color": "#F7F6FA",
+  "display": "browser",
+  "start_url": "index.html"
+}
