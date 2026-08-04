@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""Convert the JEM incident log (.xlsx) into the tracker's incidents.json.
+"""Convert JEM incident log workbook(s) (.xlsx) into the tracker's incidents.json.
 
-Reads the workbook with the stdlib only (no openpyxl), normalises the column
+Reads each workbook with the stdlib only (no openpyxl), normalises the column
 names, cleans the free-text description, splits the source URLs out of the
 source columns, and writes data/incidents.raw.json ready for geocoding.
 
-Usage: python3 scripts/xlsx_to_json.py ../Documents/MAY_26.xlsx
+Usage:
+    python3 scripts/xlsx_to_json.py ../Documents/MAY_26.xlsx
+        Single cumulative workbook -> overwrites incidents.raw.json (the
+        normal monthly-refresh workflow: the new workbook already contains
+        the full history).
+
+    python3 scripts/xlsx_to_json.py Jan_25.xlsx Feb_25.xlsx ... --include-existing
+        Multiple delta workbooks (e.g. a year of monthly logs) get merged
+        into one raw file. --include-existing also folds in whatever is
+        already in data/incidents.raw.json, so a from-scratch backfill
+        doesn't clobber records already converted from a different source.
 """
 import json
 import re
@@ -73,6 +83,7 @@ def read_sheet(path):
 HEADER_MAP = {
     "sr. no": "sr_no",
     "reporting date": "date",
+    "date": "date",
     "place": "place",
     "category": "category",
     "minority": "minority",
@@ -92,23 +103,67 @@ URL_RE = re.compile(r"https?://[^\s,]+")
 STATE_FIXES = {
     "Uttarkhand": "Uttarakhand",
     "Uttrakhand": "Uttarakhand",
+    "Chhatisgarh": "Chhattisgarh",
+    "Chattisgarh": "Chhattisgarh",
+    "Maharshtra": "Maharashtra",
+    "Gujrat": "Gujarat",
+    "Tamilnadu": "Tamil Nadu",
+    "Kolkata": "West Bengal",  # city name entered where the state was meant
     "Up": "Uttar Pradesh",
     "Mp": "Madhya Pradesh",
     "Wb": "West Bengal",
     "J&k": "Jammu & Kashmir",
+    "Jammu And Kashmir": "Jammu & Kashmir",
     "Nct Of Delhi": "Delhi",
     "New Delhi": "Delhi",
 }
+# 12 monthly logs of free-text entry produced a long tail of one-off spelling
+# and punctuation drift on top of the recurring variants above — trailing
+# periods/hyphens and doubled internal spaces are stripped generically
+# (see clean_label()) before this table is consulted, so it only needs to
+# hold genuine word-level differences (typos, singular/plural, word order).
 CATEGORY_FIXES = {
     "act of hate": "Act of hate",
+    "acto of hate": "Act of hate",
+    "hate speech": "Act of hate",
     "act of violence": "Act of violence",
+    "acts of violence": "Act of violence",
+    "act violence": "Act of violence",
     "attacks on religious spaces": "Attacks on religious spaces",
+    "attack on religious spaces": "Attacks on religious spaces",
+    "attacks on religious places": "Attacks on religious spaces",
+    "attack on religious places": "Attacks on religious spaces",
+    "attacks on religous spaces": "Attacks on religious spaces",
+    "religious places": "Attacks on religious spaces",
     "police atrocity": "Police atrocity",
+    "police atrocities": "Police atrocity",
+    "police atorcities": "Police atrocity",
+    "police artocities": "Police atrocity",
     "discrimination,exclusion & prejudice": "Discrimination, exclusion & prejudice",
     "discrimination, exclusion & prejudice": "Discrimination, exclusion & prejudice",
+    "discrimination exclusion & prejudice": "Discrimination, exclusion & prejudice",
+    "discrimination exlusion & prejudice": "Discrimination, exclusion & prejudice",
+    "discrimination, exclusion & prejiduce": "Discrimination, exclusion & prejudice",
+    "discrimination, exclusion and prejudice": "Discrimination, exclusion & prejudice",
+    "discrimination, exclusion and preducie": "Discrimination, exclusion & prejudice",
+    "discrimination prejudice": "Discrimination, exclusion & prejudice",
+    "discrimination": "Discrimination, exclusion & prejudice",
+    "prejudice": "Discrimination, exclusion & prejudice",
     "state sponsored discrimiatory practice": "State-sponsored discriminatory practice",
     "state sponsored discriminatory practice": "State-sponsored discriminatory practice",
+    "state sponsored discriminatory practices": "State-sponsored discriminatory practice",
+    "state sponsered discrimanatory practice": "State-sponsored discriminatory practice",
+    "state sponsored discriminaory practices": "State-sponsored discriminatory practice",
+    "state sposored discriminatory practice": "State-sponsored discriminatory practice",
+    "state sponsored discrimination": "State-sponsored discriminatory practice",
+    "state sponsored": "State-sponsored discriminatory practice",
+    "state sponsoreded": "State-sponsored discriminatory practice",
+    "state sponsored discriminatory practice & attacks on religious places":
+        "State-sponsored discriminatory practice",
     "media manipulation and distortion of facts": "Media manipulation & distortion of facts",
+    "media manipulation & distortion of facts": "Media manipulation & distortion of facts",
+    "media manipulation": "Media manipulation & distortion of facts",
+    "media": "Media manipulation & distortion of facts",
 }
 # Entries that name no real place — they stay in the data but off the map.
 # Keep in sync with NON_GEO in assets/app.js.
@@ -129,46 +184,74 @@ def clean(s):
     return s.strip()
 
 
+def clean_label(s):
+    """Strip trailing punctuation and normalise internal spacing on a
+    short category/state label. A year of free-text logging produces a lot
+    of "Maharashtra." / "Discrimination,    Exclusion & Prejudice" drift
+    that would otherwise fragment an entry that's really identical."""
+    s = re.sub(r"\s+", " ", s).strip(" .-")
+    s = re.sub(r"\s*,\s*", ", ", s)
+    return s
+
+
 # Case-insensitive alias lookup, so "UP", "Up" and "up" all fold the same
 # way. Keep in sync with STATE_ALIAS_LC in assets/app.js.
 STATE_FIXES_LC = {k.lower(): v for k, v in STATE_FIXES.items()}
 
 
 def title_case_state(s):
-    s = clean(s)
+    s = clean_label(clean(s))
     if not s:
         return ""
-    alias = STATE_FIXES_LC.get(" ".join(s.split()).lower())
+    alias = STATE_FIXES_LC.get(s.lower())
     if alias:
         return alias
     # "Uttar pradesh " -> "Uttar Pradesh"; leave acronyms like "NCT" alone.
     return " ".join(w if w.isupper() else w.capitalize() for w in s.split())
 
 
-def main():
-    src = Path(sys.argv[1] if len(sys.argv) > 1 else "../Documents/MAY_26.xlsx")
-    out = Path(__file__).resolve().parent.parent / "data" / "incidents.raw.json"
+def convert_file(src, used_ids):
+    """Parse one workbook into a list of raw incident dicts.
 
+    used_ids is shared across every file in a multi-workbook run, so ids
+    (ref+date based) stay unique across the whole merged set, not just
+    within one sheet.
+    """
     rows = read_sheet(src)
     if not rows:
-        sys.exit("no rows found")
+        print(f"note: {src.name}: no rows found", file=sys.stderr)
+        return []
 
     # The header is not necessarily row 1 — find the row that carries it.
+    # Some workbooks have merged-cell artifacts in the first header cell
+    # ("Sr. No+A5:I6"), hence startswith rather than an exact match.
     head_i = next(
-        (i for i, r in enumerate(rows) if any(norm_header(v) == "sr. no" for v in r.values())),
+        (i for i, r in enumerate(rows) if any(norm_header(v).startswith("sr. no") for v in r.values())),
         0,
     )
     # A field can span several columns (the sheet repeats 'Primary Source'),
     # so map each field to every column that carries it.
     cols = {}
     for idx, raw in rows[head_i].items():
-        key = HEADER_MAP.get(norm_header(raw))
+        h = norm_header(raw)
+        if h.startswith("sr. no"):
+            h = "sr. no"  # collapse merged-cell junk trailing the label
+        key = HEADER_MAP.get(h)
         if key:
             cols.setdefault(key, []).append(idx)
 
+    # A handful of workbooks have a date column with no header text at all
+    # (the header cell is simply absent from the sheet XML) — it shows up
+    # positionally, wedged between 'sr_no' and 'place'. Recover it there.
+    if "date" not in cols and "sr_no" in cols and "place" in cols:
+        sr_idx = cols["sr_no"][0]
+        place_idx = cols["place"][0]
+        if place_idx - sr_idx == 2:
+            cols["date"] = [sr_idx + 1]
+
     missing = set(HEADER_MAP.values()) - set(cols)
     if missing:
-        print(f"note: columns not found in sheet: {sorted(missing)}", file=sys.stderr)
+        print(f"note: {src.name}: columns not found in sheet: {sorted(missing)}", file=sys.stderr)
 
     # The description sits in the column immediately after 'place' but has no
     # header of its own in this workbook, so take it positionally.
@@ -178,7 +261,6 @@ def main():
     rows = rows[head_i + 1:]
 
     incidents = []
-    used_ids = set()
     for r in rows:
         def get(k, _r=r):
             """First non-empty value across every column mapped to this field."""
@@ -203,7 +285,8 @@ def main():
             if re.fullmatch(r"\d+(\.\d+)?", s):
                 date = excel_date(s)
             else:
-                for fmt in ("%d-%m-%Y", "%d/%m/%Y", "%Y-%m-%d", "%d.%m.%Y", "%d %b %Y", "%d %B %Y"):
+                for fmt in ("%d-%m-%Y", "%d/%m/%Y", "%Y-%m-%d", "%d.%m.%Y", "%d %b %Y", "%d %B %Y",
+                            "%B %d, %Y", "%b %d, %Y"):
                     try:
                         date = datetime.strptime(s, fmt).date().isoformat()
                         break
@@ -223,7 +306,7 @@ def main():
                     sources.append({"kind": label, "note": text})
 
         state = title_case_state(get("state"))
-        category = get("category")
+        category = clean_label(get("category"))
         category = CATEGORY_FIXES.get(category.lower(), category)
 
         # 'Sr. No' restarts with each month block in the log, so it is a
@@ -256,9 +339,53 @@ def main():
             "sources": sources,
         })
 
+    print(f"  {src.name}: +{len(incidents)} incidents")
+    return incidents
+
+
+def main():
+    args = sys.argv[1:]
+    include_existing = "--include-existing" in args
+    paths = [Path(a) for a in args if not a.startswith("--")]
+    if not paths:
+        paths = [Path("../Documents/MAY_26.xlsx")]
+
+    out = Path(__file__).resolve().parent.parent / "data" / "incidents.raw.json"
+
+    existing = []
+    if include_existing and out.exists():
+        existing = json.loads(out.read_text())
+        print(f"including {len(existing)} existing incidents from {out}")
+
+    used_ids = {inc["id"] for inc in existing}
+    incidents = list(existing)
+    for path in paths:
+        incidents.extend(convert_file(path, used_ids))
+
+    # A monthly log occasionally double-pastes the same row under two
+    # Sr. Nos (within one month, or copied into the next month's sheet
+    # too) — same date/place/narrative verbatim is a duplicate entry, not
+    # two incidents, so it's dropped rather than inflating the count.
+    seen, deduped = set(), []
+    dropped = 0
+    for inc in incidents:
+        key = (inc.get("date"), (inc.get("place") or "").strip().lower(),
+               (inc.get("description") or "").strip())
+        if key in seen:
+            dropped += 1
+            continue
+        seen.add(key)
+        deduped.append(inc)
+    if dropped:
+        print(f"dropped {dropped} exact-duplicate records (same date+place+description)")
+    incidents = deduped
+
+    # Chronological, undated records last — easier to review by hand.
+    incidents.sort(key=lambda i: i.get("date") or "9999-99-99")
+
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(incidents, ensure_ascii=False, indent=1))
-    print(f"wrote {len(incidents)} incidents -> {out}")
+    print(f"\nwrote {len(incidents)} incidents total -> {out}")
 
     # quick shape report
     from collections import Counter
