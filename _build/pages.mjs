@@ -103,7 +103,7 @@ function catBadge(category) {
 }
 
 function recordCard(incident) {
-  const firstLine = String(incident.description || '').split('\n')[0];
+  const fullText = String(incident.description || '').split(/\n+/).map((l) => l.trim()).filter(Boolean).join(' ');
   // Append the state only when the place string doesn't already carry it.
   const place = String(incident.place || '');
   const state = incident.state && !place.toLowerCase().includes(String(incident.state).toLowerCase())
@@ -111,7 +111,7 @@ function recordCard(incident) {
   return `<a class="record-card" href="tracker/index.html#sel=${encodeURIComponent(incident.id)}">
         <span class="rc-meta"><span class="rc-date">${esc(incident.date)}</span> ${catBadge(incident.category)}</span>
         <span class="rc-place">${esc(place)}${state}</span>
-        <span class="rc-desc">${esc(firstLine)}</span>
+        <span class="rc-desc">${esc(fullText)}</span>
       </a>`;
 }
 
@@ -218,8 +218,8 @@ export function home() {
       <h1>Justice and Empowerment of Minorities</h1>
       <p class="lead">JEM safeguards the human rights of, and counters hate speech targeted against, religious minorities in India — documenting hate crimes, promoting the rule of law, and providing legal assistance to victims.</p>
       <div class="actions">
-        <a class="btn btn-accent" href="tracker/index.html">Open the live hate incident tracker</a>
-        <a class="btn btn-secondary" href="report-a-hate-crime.html">Report a hate crime</a>
+        <a class="btn btn-cta" href="report-a-hate-crime.html">Report a hate crime <span class="cta-arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-secondary" href="tracker/index.html">Open the live tracker</a>
       </div>
     </div>
     ${videoCard({ src: 'assets/video/jem-intro.mp4', poster: 'assets/video/jem-intro-poster.png', caption: 'JEM introduction film · 05:56', label: 'the JEM introduction film', captions: 'assets/video/jem-intro.en.vtt', transcript: 'assets/video/jem-intro.en.txt' })}
@@ -237,16 +237,9 @@ ${helplineStrip()}
       </div>
       <a class="btn btn-outline" href="tracker/index.html" target="_blank" rel="noopener">Open full-screen tracker →</a>
     </div>
-    <p class="text-lead measure" style="margin-bottom:24px">A live, source-linked map of documented hate incidents against religious minorities in India. Every pin carries a narrative, record fields, JEM's intervention status and its source links — filterable by category, minority group, state and date.</p>
-    <div class="tracker-embed-wrap" data-tracker-embed="tracker/index.html?embed=1">
-      <div class="tracker-facade">
-        <img class="tf-mark" src="assets/logos/jem-mark.png" alt="" width="72" height="72">
-        <h3>The live map loads when you ask for it</h3>
-        <div class="tricolour-rule"></div>
-        <p>Nothing streams until you choose to open it — no map tiles, no data, no third-party requests.</p>
-        <button type="button" class="btn btn-accent tf-open">Open the live tracker</button>
-        <span class="tf-note">Or <a href="tracker/index.html" style="color:inherit">open it full-screen →</a></span>
-      </div>
+    <p class="text-lead" style="margin-bottom:24px">A live, source-linked map of documented hate incidents against religious minorities in India. Every pin carries a narrative, record fields, JEM's intervention status and its source links — filterable by category, minority group, state and date. It opens on the state view; switch to pins, density or trends inside the map.</p>
+    <div class="tracker-embed-wrap is-live">
+      <iframe src="tracker/index.html?embed=1#mode=states" title="JEM hate incident tracker — live state map" loading="lazy"></iframe>
     </div>
     <div class="stat-grid" data-tracker-stats="tracker/" style="margin-top:18px">
       <div class="stat-card">
@@ -307,7 +300,7 @@ ${helplineStrip()}
     <div>
       <p class="kicker">About JEM</p>
       <h2 style="margin-bottom:16px">Documentation, on the record.</h2>
-      <p class="text-lead">JEM is an initiative of the Jamiat Ulama-i-Hind, the country's oldest and largest socio-cultural organisation of Indian Muslims. It collects, collates and presents cases of harassment perpetrated against the country's minorities — promoting rule of law, access to justice, equal rights and citizens' security.</p>
+      <p class="text-lead">JEM is an initiative of the Jamiat Ulama-i-Hind, the country's oldest and largest socio-cultural organisation of Indian Muslims. It collects, collates and presents cases of harassment perpetrated against the country's minorities — promoting rule of law, access to justice, equal rights and citizens' security. Alongside this documentation JEM publishes Monthly Reports, four Quarterly Reviews and an Annual Review of the record.</p>
       <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
         <a class="btn btn-outline" href="about.html">About JEM →</a>
         <a class="btn btn-ghost" href="our-work.html">See our work →</a>
@@ -447,7 +440,7 @@ export function about() {
       <div class="step">
         <span class="n">02 · Verify</span>
         <h3>The report is verified</h3>
-        <p>Editorial review checks sources and fields before anything is entered. Details remain as reported; allegations are not findings of fact.</p>
+        <p>Editorial review checks sources and fields, and the Case Review Committee (CRC) screens each case and decides the intervention before anything is entered. Details remain as reported; allegations are not findings of fact.</p>
       </div>
       <div class="step">
         <span class="n">03 · Publish</span>
@@ -795,7 +788,7 @@ ${helplineStrip()}
           <input id="consent" name="consent" type="checkbox" required>
           <label for="consent">I consent to JEM storing and reviewing this report.</label>
         </div>
-        <button class="btn btn-primary" type="submit">Prepare the report</button>
+        <button class="btn btn-cta" type="submit">Submit</button>
         <p class="form-note">What happens to this report: it is stored by JEM, reviewed by the documentation team, and may be added to the tracker after verification. Contact details are used only to follow up and are never published.</p>
       </form>
       <div class="report-output" data-report-output hidden>
@@ -1018,11 +1011,11 @@ export function methodology() {
     <div>
       <p class="kicker" id="verification">Verification</p>
       <h2 style="margin-bottom:14px">From field log to published record</h2>
-      <p class="text-lead">Reports enter a field log. Editorial review checks each report's sources, categorisation and record fields before it is entered into the documentation sheet, and the sheet feeds the public tracker within one refresh cycle.</p>
+      <p class="text-lead">Reports enter a field log. Editorial review checks each report's sources, categorisation and record fields, and the Case Review Committee (CRC) screens every case — assessing the evidence and deciding the appropriate intervention — before it is entered into the documentation sheet. The sheet feeds the public tracker within one refresh cycle.</p>
       <p class="text-lead">Details are as reported; allegations are not findings of fact. Inclusion in the record is not adjudication — accused persons are presumed innocent unless convicted by a court. And because the record contains only what could be documented and verified, it is an undercount, not a census.</p>
     </div>
     <div class="callout green">
-      <p><strong>Verified · entered into record.</strong> Report → editorial review → documentation sheet → tracker, within one refresh cycle.</p>
+      <p><strong>Verified · entered into record.</strong> Report → editorial review → Case Review Committee → documentation sheet → tracker, within one refresh cycle.</p>
     </div>
   </div>
 </section>
@@ -1083,8 +1076,8 @@ export function press() {
 <section class="page-hero">
   <div class="container">
     <p class="kicker on-dark">Press &amp; media</p>
-    <h1>Press &amp; media</h1>
-    <p class="lead">Boilerplate, contact, logos, citation and the current figures — what a newsroom needs to cite the record accurately.</p>
+    <h1>Reporting on hate crimes? Start from the record.</h1>
+    <p class="lead">JEM maintains a live, source-linked record of hate incidents against India's religious minorities — open data a newsroom can filter, cite, embed and verify. This page carries everything needed to use it accurately: figures, citation, embeds, logos and a direct line to the team.</p>
   </div>
 </section>
 
@@ -1093,9 +1086,16 @@ export function press() {
     <div>
       <p class="kicker">Boilerplate</p>
       <h2 style="margin-bottom:14px">About JEM, in one paragraph</h2>
-      <p class="text-lead">Justice and Empowerment of Minorities (JEM) is an initiative of the Jamiat Ulama-i-Hind, based at 1, Bahadur Shah Zafar Marg, New Delhi. JEM documents hate crimes against India's religious minorities, publishes a live, source-linked hate incident tracker along with quarterly and annual reviews, and provides legal assistance to victims. Every entry in its record is dated, categorised and carries its sources.</p>
+      <p class="text-lead">Justice and Empowerment of Minorities (JEM) is the human-rights documentation initiative of the Jamiat Ulama-i-Hind, the country's oldest and largest socio-cultural organisation of Indian Muslims. From 1, Bahadur Shah Zafar Marg, New Delhi, JEM documents hate crimes against India's religious minorities, verifies every case through its Case Review Committee, publishes a live, source-linked hate incident tracker alongside Monthly Reports, Quarterly Reviews and an Annual Review, and provides legal assistance to victims. Every entry in the record is dated, categorised and carries its sources.</p>
+      <p class="kicker" style="margin-top:26px">What JEM can provide a newsroom</p>
+      <ul class="press-list">
+        <li>Filtered views of the tracker as citable permalinks — any state, category or date range</li>
+        <li>The full dataset as CSV or JSON, under CC BY 4.0 with attribution</li>
+        <li>An embeddable live map for articles (code below)</li>
+        <li>Background and comment on documented cases, on the record</li>
+      </ul>
       <p class="kicker" style="margin-top:26px">Press contact</p>
-      <p class="text-lead"><a href="mailto:contact@jem.org.in?subject=Press%20enquiry">contact@jem.org.in</a> — mark the subject "Press enquiry".</p>
+      <p class="text-lead"><a href="mailto:contact@jem.org.in?subject=Press%20enquiry">contact@jem.org.in</a> — mark the subject "Press enquiry". For urgent verification requests, call the helpline listed in the footer.</p>
       <p class="kicker" style="margin-top:26px">Suggested citation</p>
       <div class="copy-block">
         <span class="cb-text" data-citation>Justice and Empowerment of Minorities (JEM). Hate Incident Tracker. Jamiat Ulama-i-Hind, New Delhi. https://jem.org.in/tracker/. Accessed <span data-accessed-date>[date]</span>.</span>

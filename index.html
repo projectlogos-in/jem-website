@@ -39,31 +39,40 @@
       <div class="has-dropdown">
         <a href="about.html">About us</a><button type="button" class="drop-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dd-1" aria-label="About us submenu"></button>
         <div class="dropdown" id="nav-dd-1">
-          <a href="about.html">About JEM</a>
-          <a href="methodology.html">Methodology & data</a>
-          <a href="press.html">Press & media</a>
+          <a href="about.html"><span class="dd-label">About JEM</span><span class="dd-desc">Mission, lineage and how the record is made</span></a>
+          <a href="methodology.html"><span class="dd-label">Methodology & data</span><span class="dd-desc">What is counted, verification and open data</span></a>
+          <a href="accessibility.html"><span class="dd-label">Accessibility</span><span class="dd-desc">Our WCAG target and known gaps</span></a>
         </div>
       </div>
       <a href="our-work.html">Our work</a>
-      <a href="publications.html">Publications</a>
-      <a href="reports.html">Reports</a>
-      <a href="tracker/index.html" class="tracker-link">Hate incident tracker</a>
-      <a href="report-a-hate-crime.html">Report a hate crime</a>
       <div class="has-dropdown">
-        <a href="gallery.html">Gallery</a><button type="button" class="drop-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dd-7" aria-label="Gallery submenu"></button>
-        <div class="dropdown" id="nav-dd-7">
-          <a href="gallery.html">Photo gallery</a>
-          <a href="video.html">Video gallery</a>
+        <a href="tracker/index.html" class="tracker-link">The record</a><button type="button" class="drop-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dd-3" aria-label="The record submenu"></button>
+        <div class="dropdown" id="nav-dd-3">
+          <a href="tracker/index.html"><span class="dd-label">Hate incident tracker</span><span class="dd-desc">The live, source-linked map of the record</span></a>
+          <a href="reports.html"><span class="dd-label">Reports</span><span class="dd-desc">Findings on incidents, patterns and judgments</span></a>
+          <a href="publications.html"><span class="dd-label">Publications</span><span class="dd-desc">Monthly, quarterly and annual reviews</span></a>
+          <a href="story.html"><span class="dd-label">Two months in the record</span><span class="dd-desc">A guided reading of May–June 2026</span></a>
         </div>
       </div>
-      <a href="contact.html">Contact</a>
+      <a href="press.html">Press & media</a>
+      <div class="has-dropdown">
+        <a href="gallery.html">Gallery</a><button type="button" class="drop-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dd-5" aria-label="Gallery submenu"></button>
+        <div class="dropdown" id="nav-dd-5">
+          <a href="gallery.html"><span class="dd-label">Photo gallery</span><span class="dd-desc">JEM in the field</span></a>
+          <a href="video.html"><span class="dd-label">Video gallery</span><span class="dd-desc">Films, captioned and transcribed</span></a>
+        </div>
+      </div>
+      <div class="has-dropdown">
+        <a href="contact.html">Contact</a><button type="button" class="drop-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="nav-dd-6" aria-label="Contact submenu"></button>
+        <div class="dropdown" id="nav-dd-6">
+          <a href="contact.html"><span class="dd-label">Contact JEM</span><span class="dd-desc">Office, email and social channels</span></a>
+          <a href="volunteer.html"><span class="dd-label">Volunteer</span><span class="dd-desc">Document hate crimes in your city</span></a>
+        </div>
+      </div>
     </nav>
     <div class="header-cta">
-      <a class="helpline" href="report-a-hate-crime.html">
-        <span class="l">JEM helpline</span>
-        <span class="v">+91-98689 52786</span>
-      </a>
-      <a class="helpline-mini" href="tel:+919868952786">Call</a>
+      <a class="btn-header-cta" href="report-a-hate-crime.html">Report a hate crime</a>
+      <a class="helpline-mini" href="tel:+919868952786" title="JEM helpline: +91-98689 52786">Call</a>
       <button class="nav-toggle" aria-label="Toggle menu" aria-controls="site-nav" aria-expanded="false"><span></span></button>
     </div>
   </div>
@@ -78,8 +87,8 @@
       <h1>Justice and Empowerment of Minorities</h1>
       <p class="lead">JEM safeguards the human rights of, and counters hate speech targeted against, religious minorities in India — documenting hate crimes, promoting the rule of law, and providing legal assistance to victims.</p>
       <div class="actions">
-        <a class="btn btn-accent" href="tracker/index.html">Open the live hate incident tracker</a>
-        <a class="btn btn-secondary" href="report-a-hate-crime.html">Report a hate crime</a>
+        <a class="btn btn-cta" href="report-a-hate-crime.html">Report a hate crime <span class="cta-arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-secondary" href="tracker/index.html">Open the live tracker</a>
       </div>
     </div>
     <div class="video-card">
@@ -123,16 +132,9 @@
       </div>
       <a class="btn btn-outline" href="tracker/index.html" target="_blank" rel="noopener">Open full-screen tracker →</a>
     </div>
-    <p class="text-lead measure" style="margin-bottom:24px">A live, source-linked map of documented hate incidents against religious minorities in India. Every pin carries a narrative, record fields, JEM's intervention status and its source links — filterable by category, minority group, state and date.</p>
-    <div class="tracker-embed-wrap" data-tracker-embed="tracker/index.html?embed=1">
-      <div class="tracker-facade">
-        <img class="tf-mark" src="assets/logos/jem-mark.png" alt="" width="72" height="72">
-        <h3>The live map loads when you ask for it</h3>
-        <div class="tricolour-rule"></div>
-        <p>Nothing streams until you choose to open it — no map tiles, no data, no third-party requests.</p>
-        <button type="button" class="btn btn-accent tf-open">Open the live tracker</button>
-        <span class="tf-note">Or <a href="tracker/index.html" style="color:inherit">open it full-screen →</a></span>
-      </div>
+    <p class="text-lead" style="margin-bottom:24px">A live, source-linked map of documented hate incidents against religious minorities in India. Every pin carries a narrative, record fields, JEM's intervention status and its source links — filterable by category, minority group, state and date. It opens on the state view; switch to pins, density or trends inside the map.</p>
+    <div class="tracker-embed-wrap is-live">
+      <iframe src="tracker/index.html?embed=1#mode=states" title="JEM hate incident tracker — live state map" loading="lazy"></iframe>
     </div>
     <div class="stat-grid" data-tracker-stats="tracker/" style="margin-top:18px">
       <div class="stat-card">
@@ -164,17 +166,17 @@
           <a class="record-card" href="tracker/index.html#sel=r508e3a8d">
         <span class="rc-meta"><span class="rc-date">2026-06-13</span> <span class="cat-badge" style="--cat:#5E5A9A">Act of violence</span></span>
         <span class="rc-place">Parli, Beed district, Maharashtra</span>
-        <span class="rc-desc">A Muslim man, Tauheed Khan alias Afzal Pathan (36), was allegedly murdered in Beed district.</span>
+        <span class="rc-desc">A Muslim man, Tauheed Khan alias Afzal Pathan (36), was allegedly murdered in Beed district. According to reports, two individuals—Rishikesh Phad (27) and Gaurav Vyas (26)—lured him to a deserted location. The accused reportedly killed him by crushing him with stones. They then allegedly dumped the body on railway tracks to make it appear as a suicide. The motive is said to be a money dispute between the victim and the accused. Police arrested both accused, who have reportedly confessed to the crime. The incident highlights concerns over violent crime and attempts to mislead investigations.</span>
       </a>
           <a class="record-card" href="tracker/index.html#sel=r3c254734">
         <span class="rc-meta"><span class="rc-date">2026-06-13</span> <span class="cat-badge" style="--cat:#5E5A9A">Act of violence</span></span>
         <span class="rc-place">Mandsaur, Madhya Pradesh</span>
-        <span class="rc-desc">A mosque imam, Mohammad Hussain, has alleged that he was attacked by a large mob in Mandsaur.</span>
+        <span class="rc-desc">A mosque imam, Mohammad Hussain, has alleged that he was attacked by a large mob in Mandsaur. According to his account, around 50–100 individuals were involved in the assault. He stated that he was verbally abused and labeled a “Bangladeshi.” The mob allegedly snatched his mobile phone during the incident. He further claimed that he was forced to chant religious slogans under duress. The attackers also allegedly threatened to implicate him in false cases such as cow slaughter and theft.</span>
       </a>
           <a class="record-card" href="tracker/index.html#sel=r97bbaafe">
         <span class="rc-meta"><span class="rc-date">2026-06-13</span> <span class="cat-badge" style="--cat:#5E5A9A">Act of violence</span></span>
         <span class="rc-place">Sultanpur, Uttar Pradesh</span>
-        <span class="rc-desc">An incident of alleged violence against Muslim youths was reported in Sultanpur.</span>
+        <span class="rc-desc">An incident of alleged violence against Muslim youths was reported in Sultanpur. According to reports, a group of individuals assaulted the youths and subjected them to physical violence. The victims were reportedly forced to chant religious slogans during the assault. The incident has raised concerns regarding vigilantism and coercion based on religious identity.</span>
       </a>
         </div>
       </div>
@@ -207,7 +209,7 @@
     <div>
       <p class="kicker">About JEM</p>
       <h2 style="margin-bottom:16px">Documentation, on the record.</h2>
-      <p class="text-lead">JEM is an initiative of the Jamiat Ulama-i-Hind, the country's oldest and largest socio-cultural organisation of Indian Muslims. It collects, collates and presents cases of harassment perpetrated against the country's minorities — promoting rule of law, access to justice, equal rights and citizens' security.</p>
+      <p class="text-lead">JEM is an initiative of the Jamiat Ulama-i-Hind, the country's oldest and largest socio-cultural organisation of Indian Muslims. It collects, collates and presents cases of harassment perpetrated against the country's minorities — promoting rule of law, access to justice, equal rights and citizens' security. Alongside this documentation JEM publishes Monthly Reports, four Quarterly Reviews and an Annual Review of the record.</p>
       <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
         <a class="btn btn-outline" href="about.html">About JEM →</a>
         <a class="btn btn-ghost" href="our-work.html">See our work →</a>

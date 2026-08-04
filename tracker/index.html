@@ -51,6 +51,10 @@
     <button class="sheet-grab" id="sheet-grab" aria-expanded="false" aria-controls="sidebar"
             aria-label="Expand incident list"></button>
 
+    <a class="site-strip" href="../" title="Justice and Empowerment of Minorities — main site">
+      <span class="chev" aria-hidden="true">‹</span> jem.org.in
+    </a>
+
     <header class="masthead">
       <div class="masthead-top">
         <img class="masthead-mark" src="assets/logos/jem-mark.png" alt=""
@@ -158,6 +162,8 @@
     </div>
 
     <div class="pane-toolbar">
+      <a class="map-btn home-link" href="../" title="Justice and Empowerment of Minorities — main site"><span class="chev" aria-hidden="true">‹</span> jem.org.in</a>
+      <button class="map-btn btn-back" id="btn-back" hidden><span class="chev" aria-hidden="true">‹</span> <span data-i18n="back">Back</span></button>
       <div class="seg" role="group" aria-label="View">
         <button id="view-map" aria-pressed="true" data-i18n="map">Map</button>
         <button id="view-trends" aria-pressed="false" data-i18n="trends">Trends</button>
@@ -168,6 +174,14 @@
         <button class="map-btn" id="btn-heat" aria-pressed="false" data-i18n="heat">Density</button>
         <button class="map-btn" id="btn-states" aria-pressed="false" data-i18n="statesView">States</button>
       </div>
+    </div>
+
+    <div class="filter-bar" id="filter-bar">
+      <input class="fb-search" id="fb-search" type="search" autocomplete="off"
+             placeholder="Search place, name, description…" aria-label="Search incidents">
+      <select class="fb-select" id="fb-category" aria-label="Category"></select>
+      <select class="fb-select" id="fb-state" aria-label="State"></select>
+      <div class="fb-presets" id="fb-presets" role="group" aria-label="Quick date ranges"></div>
     </div>
 
     <div class="map-panel" id="map-panel">
@@ -272,6 +286,7 @@ if (location.protocol === 'file:') {
   document.write('<script src="data/incidents.js"><\/script>');
   document.write('<script src="data/geocache.js"><\/script>');
   document.write('<script src="data/india-states.js"><\/script>');
+  document.write('<script src="data/world.js"><\/script>');
 }
 </script>
 

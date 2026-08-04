@@ -12,17 +12,17 @@
   var steps = Array.prototype.slice.call(document.querySelectorAll('.scrolly .story-step'));
   if (!steps.length) return;
 
-  // Light-theme category colours — the same map _build/pages.mjs and the
-  // tracker use (dots sit on the light Positron basemap).
+  // Dark-theme category colours — the tracker's validated dark palette,
+  // matching its dark basemap which this page mirrors.
   var COLORS = {
-    'act of violence': '#5E5A9A',
+    'act of violence': '#7974C5',
     'attacks on religious spaces': '#11A68B',
-    'police atrocity': '#1096E9',
-    'state-sponsored discriminatory practice': '#BC549E',
-    'act of hate': '#DD9533',
-    'discrimination, exclusion & prejudice': '#87984F',
-    'media manipulation & distortion of facts': '#7F4413',
-    'other': '#848096'
+    'police atrocity': '#2677B2',
+    'state-sponsored discriminatory practice': '#9F5387',
+    'act of hate': '#BD8130',
+    'discrimination, exclusion & prejudice': '#778A2D',
+    'media manipulation & distortion of facts': '#C77A41',
+    'other': '#8D89A6'
   };
 
   var reducedMotion = false;
@@ -133,11 +133,51 @@
 
       map = new maplibregl.Map({
         container: 'story-map',
-        style: 'https://tiles.openfreemap.org/styles/positron',
+        // The tracker's clean, self-contained basemap, dark variant:
+        // world context beneath the official Government-of-India geometry.
+        style: {
+          version: 8,
+          sources: {},
+          layers: [{
+            id: 'background',
+            type: 'background',
+            paint: { 'background-color': '#14122B' }
+          }]
+        },
         center: [80, 23.2],
         zoom: 3.9,
+        maxZoom: 9,
         interactive: false, // the panel is decoration; the text is the interface
-        attributionControl: { compact: true }
+        attributionControl: { compact: true, customAttribution: 'Boundaries as published by the Government of India' }
+      });
+
+      // Base geometry — fails soft: without it the dots still render.
+      Promise.all([
+        fetch('tracker/data/world.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+        fetch('tracker/data/india-states.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      ]).then(function (geo) {
+        var world = geo[0], states = geo[1];
+        var addBase = function () {
+          try {
+            var before = map.getLayer('story-halo') ? 'story-halo' : undefined;
+            if (world && !map.getSource('world')) {
+              map.addSource('world', { type: 'geojson', data: world });
+              map.addLayer({ id: 'world-fill', type: 'fill', source: 'world',
+                paint: { 'fill-color': '#181430' } }, before);
+              map.addLayer({ id: 'world-lines', type: 'line', source: 'world',
+                paint: { 'line-color': 'rgba(255,255,255,0.10)', 'line-width': 0.6 } }, before);
+            }
+            if (states && !map.getSource('states')) {
+              map.addSource('states', { type: 'geojson', data: states });
+              map.addLayer({ id: 'india-fill', type: 'fill', source: 'states',
+                paint: { 'fill-color': '#211C42' } }, before);
+              map.addLayer({ id: 'state-lines', type: 'line', source: 'states',
+                paint: { 'line-color': 'rgba(255,255,255,0.30)', 'line-width': 0.8 } }, before);
+            }
+          } catch (e) { /* decorative only */ }
+        };
+        if (map.isStyleLoaded()) setTimeout(addBase, 0);
+        else map.on('style.load', function () { setTimeout(addBase, 0); });
       });
 
       var colorExpr = ['match', ['get', 'cat']];

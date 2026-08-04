@@ -80,7 +80,9 @@
   }
 
   function recordCard(incident) {
-    var firstLine = String(incident.description || '').split('\n')[0];
+    // Full description by design — mirrors recordCard() in _build/pages.mjs.
+    var fullText = String(incident.description || '').split(/\n+/).map(function (l) { return l.trim(); })
+      .filter(Boolean).join(' ');
     // Append the state only when the place string doesn't already carry it.
     var place = String(incident.place || '');
     var state = incident.state && place.toLowerCase().indexOf(String(incident.state).toLowerCase()) === -1
@@ -88,7 +90,7 @@
     return '<a class="record-card" href="tracker/index.html#sel=' + encodeURIComponent(incident.id) + '">' +
       '<span class="rc-meta"><span class="rc-date">' + esc(incident.date) + '</span> ' + catBadge(incident.category) + '</span>' +
       '<span class="rc-place">' + esc(place) + state + '</span>' +
-      '<span class="rc-desc">' + esc(firstLine) + '</span></a>';
+      '<span class="rc-desc">' + esc(fullText) + '</span></a>';
   }
 
   // Mirrors sparklineSvg() in _build/pages.mjs — keep the two in step.
@@ -408,4 +410,15 @@
         '&body=' + encodeURIComponent(body);
     });
   });
+})();
+
+// Sticky header gains its shadow only once the page scrolls.
+(function () {
+  var header = document.querySelector('.site-header');
+  if (!header) return;
+  var update = function () {
+    header.classList.toggle('scrolled', (window.scrollY || 0) > 8);
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
 })();

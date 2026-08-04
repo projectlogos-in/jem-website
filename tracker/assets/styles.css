@@ -202,6 +202,25 @@ body.embed .sidebar { display: none; }
   background: var(--on-indigo-faint);
 }
 
+/* Route back to the main site — always visible above the masthead. */
+.site-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 22px;
+  background: var(--jem-indigo-900);
+  color: var(--on-indigo-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.site-strip:hover { color: var(--jem-saffron); }
+.site-strip .chev { font-size: 13px; line-height: 1; }
+[dir="rtl"] .site-strip { letter-spacing: 0; }
+[dir="rtl"] .chev { display: inline-block; transform: scaleX(-1); }
+
 .masthead {
   padding: 18px 22px 14px;
   border-bottom: 1px solid var(--border-on-dark);
@@ -709,6 +728,80 @@ body.embed .sidebar { display: none; }
 .map-btn:hover { border-color: var(--jem-saffron); }
 .map-btn[aria-pressed="true"] { background: var(--jem-indigo); color: #fff; border-color: var(--jem-indigo); }
 :root[data-theme="dark"] .map-btn[aria-pressed="true"] { background: var(--jem-indigo-500); border-color: var(--jem-indigo-500); }
+
+.btn-back .chev { display: inline-block; margin-inline-end: 2px; }
+
+.home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.home-link .chev { display: inline-block; }
+[dir="rtl"] .home-link .chev { transform: scaleX(-1); }
+body.embed .home-link { display: none; }
+
+/* --- Top filter bar --- */
+
+.filter-bar {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--surface-raise);
+  border-bottom: 1px solid var(--border);
+  z-index: 6;
+}
+.fb-search {
+  flex: 1 1 180px;
+  min-width: 140px;
+  max-width: 280px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-body);
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.fb-search::placeholder { color: var(--text-muted); }
+.fb-search:focus { outline: none; border-color: var(--jem-saffron); }
+.fb-select {
+  background: var(--surface-raise);
+  border: 1px solid var(--border-hard);
+  border-radius: 3px;
+  color: var(--text-strong);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 8px;
+  min-height: 30px;
+  max-width: 210px;
+}
+.fb-select:focus-visible { outline: 2px solid var(--jem-saffron); outline-offset: 1px; }
+.fb-presets { display: flex; gap: 5px; }
+/* Presets restyled for the light toolbar surface (the sidebar variant sits
+   on indigo). */
+.filter-bar .preset {
+  background: transparent;
+  border: 1px solid var(--border-hard);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 5px 10px;
+  transition: all 120ms var(--ease);
+}
+.filter-bar .preset:hover { border-color: var(--jem-saffron); color: var(--text-strong); }
+.filter-bar .preset[aria-pressed="true"] {
+  background: var(--jem-saffron);
+  border-color: var(--jem-saffron);
+  color: var(--jem-indigo-900);
+}
 
 /* --- Map panel --- */
 
@@ -1484,6 +1577,8 @@ body.embed .pane-toolbar .seg { display: none; }
   .hero-stat .n { font-size: 40px; }
   .data-note { inset-inline-start: 10px; inset-inline-end: 10px; max-width: none; }
   .pane-toolbar { overflow-x: auto; }
+  .filter-bar { flex-wrap: nowrap; overflow-x: auto; }
+  .fb-search { min-width: 130px; }
   body.embed .timeline { bottom: 12px; }
 }
 

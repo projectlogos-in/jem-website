@@ -13,24 +13,36 @@ const NAV = [
   {
     id: 'about', label: 'About us', href: 'about.html',
     dropdown: [
-      { id: 'about', label: 'About JEM', href: 'about.html' },
-      { id: 'methodology', label: 'Methodology & data', href: 'methodology.html' },
-      { id: 'press', label: 'Press & media', href: 'press.html' },
+      { id: 'about', label: 'About JEM', href: 'about.html', desc: 'Mission, lineage and how the record is made' },
+      { id: 'methodology', label: 'Methodology & data', href: 'methodology.html', desc: 'What is counted, verification and open data' },
+      { id: 'accessibility', label: 'Accessibility', href: 'accessibility.html', desc: 'Our WCAG target and known gaps' },
     ],
   },
   { id: 'our-work', label: 'Our work', href: 'our-work.html' },
-  { id: 'publications', label: 'Publications', href: 'publications.html' },
-  { id: 'reports', label: 'Reports', href: 'reports.html' },
-  { id: 'tracker', label: 'Hate incident tracker', href: 'tracker/index.html', cls: 'tracker-link' },
-  { id: 'report', label: 'Report a hate crime', href: 'report-a-hate-crime.html' },
+  {
+    id: 'record', label: 'The record', href: 'tracker/index.html', cls: 'tracker-link',
+    dropdown: [
+      { id: 'tracker', label: 'Hate incident tracker', href: 'tracker/index.html', desc: 'The live, source-linked map of the record' },
+      { id: 'reports', label: 'Reports', href: 'reports.html', desc: 'Findings on incidents, patterns and judgments' },
+      { id: 'publications', label: 'Publications', href: 'publications.html', desc: 'Monthly, quarterly and annual reviews' },
+      { id: 'story', label: 'Two months in the record', href: 'story.html', desc: 'A guided reading of May–June 2026' },
+    ],
+  },
+  { id: 'press', label: 'Press & media', href: 'press.html' },
   {
     id: 'gallery', label: 'Gallery', href: 'gallery.html',
     dropdown: [
-      { id: 'gallery', label: 'Photo gallery', href: 'gallery.html' },
-      { id: 'video', label: 'Video gallery', href: 'video.html' },
+      { id: 'gallery', label: 'Photo gallery', href: 'gallery.html', desc: 'JEM in the field' },
+      { id: 'video', label: 'Video gallery', href: 'video.html', desc: 'Films, captioned and transcribed' },
     ],
   },
-  { id: 'contact', label: 'Contact', href: 'contact.html' },
+  {
+    id: 'contact', label: 'Contact', href: 'contact.html',
+    dropdown: [
+      { id: 'contact', label: 'Contact JEM', href: 'contact.html', desc: 'Office, email and social channels' },
+      { id: 'volunteer', label: 'Volunteer', href: 'volunteer.html', desc: 'Document hate crimes in your city' },
+    ],
+  },
 ];
 
 function navHtml(active) {
@@ -44,7 +56,7 @@ function navHtml(active) {
       return `<div class="has-dropdown">
         <a href="${item.href}"${parentCurrent}${cls}>${item.label}</a><button type="button" class="drop-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="${ddId}" aria-label="${item.label} submenu"></button>
         <div class="dropdown" id="${ddId}">
-          ${item.dropdown.map((d) => `<a href="${d.href}"${d.id === active ? ' aria-current="page"' : ''}>${d.label}</a>`).join('\n          ')}
+          ${item.dropdown.map((d) => `<a href="${d.href}"${d.id === active ? ' aria-current="page"' : ''}><span class="dd-label">${d.label}</span>${d.desc ? `<span class="dd-desc">${d.desc}</span>` : ''}</a>`).join('\n          ')}
         </div>
       </div>`;
     }
@@ -164,11 +176,8 @@ ${ld.join('\n')}
       ${navHtml(active)}
     </nav>
     <div class="header-cta">
-      <a class="helpline" href="report-a-hate-crime.html">
-        <span class="l">JEM helpline</span>
-        <span class="v">+91-98689 52786</span>
-      </a>
-      <a class="helpline-mini" href="tel:+919868952786">Call</a>
+      <a class="btn-header-cta" href="report-a-hate-crime.html">Report a hate crime</a>
+      <a class="helpline-mini" href="tel:+919868952786" title="JEM helpline: +91-98689 52786">Call</a>
       <button class="nav-toggle" aria-label="Toggle menu" aria-controls="site-nav" aria-expanded="false"><span></span></button>
     </div>
   </div>

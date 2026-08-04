@@ -52,9 +52,16 @@ window.JEM_CONFIG = {
      MAP
      ------------------------------------------------------------ */
 
-  /* OpenFreeMap serves these vector styles free with no API key or
-     account — one per theme. To switch to Mapbox/MapTiler, replace with
-     their style URLs (their tokens go in the URL's ?key= parameter). */
+  /* 'india' draws a clean, self-contained map from the bundled state
+     boundaries — country and state lines only, as published by the
+     Government of India, with no neighbouring-country detail and no
+     disputed-boundary rendering. Set to 'tiles' to use the full
+     OpenStreetMap basemaps below instead (note: OSM renders boundaries
+     by international convention, not the Indian official position). */
+  basemap: 'india',
+
+  /* Used only when basemap is 'tiles'. OpenFreeMap serves these vector
+     styles free with no API key or account — one per theme. */
   mapStyle:     'https://tiles.openfreemap.org/styles/positron',
   mapStyleDark: 'https://tiles.openfreemap.org/styles/fiord',
 
@@ -314,6 +321,10 @@ window.JEM_CONFIG = {
       presetThisMonth: 'This month',
       presetAll: 'All dates',
       srcCount: (n) => `${n} ${n === 1 ? 'source' : 'sources'}`,
+      back: 'Back',
+      allCategories: 'All categories',
+      allStates: 'All states',
+      nSelected: (n) => `${n} selected`,
     },
     ur: {
       title: 'نفرت انگیز واقعات کا ٹریکر',
@@ -433,6 +444,10 @@ window.JEM_CONFIG = {
       presetThisMonth: 'اس مہینے',
       presetAll: 'تمام تاریخیں',
       srcCount: (n) => `${n} ${n === 1 ? 'ذریعہ' : 'ذرائع'}`,
+      back: 'واپس',
+      allCategories: 'تمام زمرے',
+      allStates: 'تمام ریاستیں',
+      nSelected: (n) => `${n} منتخب`,
     },
     hi: {
       title: 'नफ़रत आधारित घटनाओं का ट्रैकर',
@@ -552,6 +567,10 @@ window.JEM_CONFIG = {
       presetThisMonth: 'इस महीने',
       presetAll: 'सभी तिथियाँ',
       srcCount: (n) => `${n} स्रोत`,
+      back: 'वापस',
+      allCategories: 'सभी श्रेणियाँ',
+      allStates: 'सभी राज्य',
+      nSelected: (n) => `${n} चयनित`,
     },
   },
 };

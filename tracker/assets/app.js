@@ -56,6 +56,12 @@ function applyStrings() {
   });
   $('search').placeholder = t('searchPlaceholder');
   $('search').setAttribute('aria-label', t('searchLabel'));
+  if ($('fb-search')) {
+    $('fb-search').placeholder = t('searchPlaceholder');
+    $('fb-search').setAttribute('aria-label', t('searchLabel'));
+  }
+  if ($('fb-category')) $('fb-category').setAttribute('aria-label', t('category'));
+  if ($('fb-state')) $('fb-state').setAttribute('aria-label', t('state'));
   $('date-from').setAttribute('aria-label', t('from'));
   $('date-to').setAttribute('aria-label', t('to'));
   $('card-close').setAttribute('aria-label', t('closeDetail'));
@@ -222,6 +228,8 @@ function stableId(place, date, description, used) {
    ------------------------------------------------------------------ */
 
 let applyingHash = false;
+let booted = false;      // undo entries only record user actions, not boot
+const undoStack = [];
 
 function hashFromState() {
   const p = new URLSearchParams();
@@ -234,6 +242,7 @@ function hashFromState() {
   if (f.to) p.set('to', f.to);
   if (state.selected) p.set('sel', state.selected);
   if (state.view !== 'map') p.set('view', state.view);
+  if (state.mapMode !== 'pins') p.set('mode', state.mapMode);
   if (!state.sortDesc) p.set('sort', 'asc');
   if (state.lang !== 'en') p.set('lang', state.lang);
   const s = p.toString();
@@ -244,10 +253,34 @@ function writeHash(push = false) {
   if (applyingHash) return;
   const h = hashFromState();
   if (h === location.hash || (!h && !location.hash)) return;
+  // Every distinct state is undoable via the toolbar Back button,
+  // independent of browser history (filters use replaceState).
+  if (booted) {
+    undoStack.push(location.hash);
+    if (undoStack.length > 60) undoStack.shift();
+  }
   const url = location.pathname + location.search + h;
   if (push) history.pushState(null, '', url);
   else history.replaceState(null, '', url);
   syncEmbedLink();
+  updateBackButton();
+}
+
+function updateBackButton() {
+  const b = $('btn-back');
+  if (b) b.hidden = !undoStack.length;
+}
+
+function goBack() {
+  if (!undoStack.length) return;
+  const h = undoStack.pop();
+  applyingHash = true;
+  history.replaceState(null, '', location.pathname + location.search + h);
+  readHash();
+  applyingHash = false;
+  applyHashToUI();
+  syncEmbedLink();
+  updateBackButton();
 }
 
 function readHash() {
@@ -261,6 +294,12 @@ function readHash() {
   f.to = /^\d{4}-\d{2}-\d{2}$/.test(p.get('to') || '') ? p.get('to') : '';
   state.selected = p.get('sel') || null;
   state.view = p.get('view') === 'trends' ? 'trends' : 'map';
+  const mode = p.get('mode');
+  const want = (mode === 'heat' || mode === 'states') ? mode : 'pins';
+  // Applied synchronously (setMapMode assigns state.mapMode before any
+  // await), so the very next render serializes the same mode back into
+  // the hash instead of stripping it.
+  if (want !== state.mapMode) setMapMode(want);
   state.sortDesc = p.get('sort') !== 'asc';
   const lang = p.get('lang');
   if (['en', 'ur', 'hi'].includes(lang)) state.lang = lang;
@@ -675,8 +714,26 @@ function toGeoJSON(incidents) {
   };
 }
 
-const mapStyleUrl = () =>
-  (state.theme === 'dark' && CFG.mapStyleDark) ? CFG.mapStyleDark : CFG.mapStyle;
+/* The default basemap is a clean, self-contained India: background colour
+   plus the bundled state polygons (Government of India boundaries), so no
+   neighbouring-country detail and no disputed-boundary rendering appears.
+   Only glyphs for labels are fetched externally. */
+function baseStyle() {
+  if (CFG.basemap !== 'india') {
+    return (state.theme === 'dark' && CFG.mapStyleDark) ? CFG.mapStyleDark : CFG.mapStyle;
+  }
+  const dark = state.theme === 'dark';
+  return {
+    version: 8,
+    glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+    sources: {},
+    layers: [{
+      id: 'background',
+      type: 'background',
+      paint: { 'background-color': dark ? '#14122B' : '#EFEDF6' },
+    }],
+  };
+}
 
 function initMap() {
   if (typeof maplibregl === 'undefined') {
@@ -687,11 +744,13 @@ function initMap() {
 
   map = new maplibregl.Map({
     container: 'map',
-    style: mapStyleUrl(),
+    style: baseStyle(),
     center: CFG.center,
     zoom: CFG.zoom,
-    maxZoom: CFG.maxZoom,
-    attributionControl: { compact: true },
+    maxZoom: CFG.basemap === 'india' ? Math.min(CFG.maxZoom, 9) : CFG.maxZoom,
+    attributionControl: CFG.basemap === 'india'
+      ? { compact: true, customAttribution: 'Boundaries as published by the Government of India' }
+      : { compact: true },
   });
 
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
@@ -727,11 +786,15 @@ function initMap() {
    and the source's tiles stay pending forever. */
 function styleFont() {
   const layers = (map.getStyle() || {}).layers || [];
+  let fallback = null;
   for (const l of layers) {
     const f = l.layout && l.layout['text-font'];
-    if (Array.isArray(f) && f.length && typeof f[0] === 'string') return f;
+    if (Array.isArray(f) && f.length && typeof f[0] === 'string') {
+      if (!/italic/i.test(f[0])) return f; // prefer an upright stack
+      fallback = fallback || f;
+    }
   }
-  return ['Noto Sans Regular'];
+  return fallback || ['Noto Sans Regular'];
 }
 
 /* Source + layers, kept separate from the interaction handlers so toggling
@@ -859,7 +922,7 @@ function updateMapData() {
 function swapMapStyle() {
   if (!map) return;
   mapReady = false;
-  map.setStyle(mapStyleUrl());
+  map.setStyle(baseStyle(), { diff: false });
 }
 
 /* ------------------------------------------------------------------
@@ -868,6 +931,17 @@ function swapMapStyle() {
    ------------------------------------------------------------------ */
 
 let statesGeo = null;
+let worldGeo = null;
+
+async function ensureWorldGeo() {
+  if (worldGeo) return true;
+  if (window.JEM_WORLD_GEO) { worldGeo = window.JEM_WORLD_GEO; return true; }
+  try {
+    const r = await fetch('data/world.json');
+    if (r.ok) { worldGeo = await r.json(); return true; }
+  } catch {}
+  return false;
+}
 
 async function ensureStatesGeo() {
   if (statesGeo) return true;
@@ -916,29 +990,101 @@ function stateFillExpr() {
   return { expr, max };
 }
 
+function stateLabelPoints() {
+  return {
+    type: 'FeatureCollection',
+    features: (statesGeo.features || [])
+      .filter((f) => isFinite(f.properties.lx))
+      .map((f) => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [f.properties.lx, f.properties.ly] },
+        properties: { state: f.properties.state },
+      })),
+  };
+}
+
 function addStateLayers() {
   if (!statesGeo || map.getSource('states')) return;
+  const india = CFG.basemap === 'india';
   const vis = state.mapMode === 'states' ? 'visible' : 'none';
-  // Fills slide beneath the basemap's labels so place names stay readable.
+  const alwaysVis = india ? 'visible' : vis;
+  // Everything slides beneath the incident layers when those already exist,
+  // and beneath any tile-basemap labels otherwise.
   const firstSymbol = (map.getStyle().layers || []).find((l) => l.type === 'symbol');
+  const before = map.getLayer('heat') ? 'heat' : (firstSymbol && firstSymbol.id);
   map.addSource('states', { type: 'geojson', data: statesGeo });
+  if (india) {
+    const dark = state.theme === 'dark';
+    // Unlabeled world context first — neutral land, faint country lines.
+    // India is absent from this layer; the official geometry below covers it.
+    if (worldGeo && !map.getSource('world')) {
+      map.addSource('world', { type: 'geojson', data: worldGeo });
+      map.addLayer({
+        id: 'world-fill',
+        type: 'fill',
+        source: 'world',
+        paint: { 'fill-color': dark ? '#181430' : '#DEDAE9' },
+      }, before);
+      map.addLayer({
+        id: 'world-lines',
+        type: 'line',
+        source: 'world',
+        paint: {
+          'line-color': dark ? 'rgba(255,255,255,0.12)' : 'rgba(42,35,96,0.14)',
+          'line-width': 0.6,
+        },
+      }, before);
+    }
+    // The country itself — the ground everything sits on.
+    map.addLayer({
+      id: 'india-fill',
+      type: 'fill',
+      source: 'states',
+      paint: { 'fill-color': dark ? '#211C42' : '#FFFFFF' },
+    }, before);
+  }
   map.addLayer({
     id: 'state-fills',
     type: 'fill',
     source: 'states',
     layout: { visibility: vis },
-    paint: { 'fill-color': stateFillExpr().expr, 'fill-opacity': 0.8 },
-  }, firstSymbol && firstSymbol.id);
+    paint: { 'fill-color': stateFillExpr().expr, 'fill-opacity': india ? 1 : 0.8 },
+  }, before);
   map.addLayer({
     id: 'state-lines',
     type: 'line',
     source: 'states',
-    layout: { visibility: vis },
-    paint: {
+    layout: { visibility: alwaysVis },
+    paint: india ? {
+      'line-color': state.theme === 'dark' ? 'rgba(255,255,255,0.35)' : 'rgba(42,35,96,0.30)',
+      'line-width': ['interpolate', ['linear'], ['zoom'], 4, 0.7, 7, 1.2],
+    } : {
       'line-color': state.theme === 'dark' ? 'rgba(20,18,43,0.85)' : 'rgba(255,255,255,0.85)',
       'line-width': 0.8,
     },
-  }, firstSymbol && firstSymbol.id);
+  }, before);
+  // Legible state names, drawn above the fills (collision hides the
+  // crowded ones automatically at low zoom).
+  map.addSource('state-label-pts', { type: 'geojson', data: stateLabelPoints() });
+  map.addLayer({
+    id: 'state-labels',
+    type: 'symbol',
+    source: 'state-label-pts',
+    layout: {
+      visibility: alwaysVis,
+      'text-field': ['get', 'state'],
+      'text-font': styleFont(),
+      'text-size': ['interpolate', ['linear'], ['zoom'], 3.5, 9.5, 6, 13],
+      'text-transform': 'uppercase',
+      'text-letter-spacing': 0.06,
+      'text-max-width': 7,
+    },
+    paint: {
+      'text-color': state.theme === 'dark' ? '#EDEBFA' : '#2A2360',
+      'text-halo-color': state.theme === 'dark' ? 'rgba(20,18,43,0.9)' : 'rgba(255,255,255,0.9)',
+      'text-halo-width': 1.3,
+    },
+  }, before);
 }
 
 function wireStateInteractions() {
@@ -987,7 +1133,8 @@ async function setMapMode(mode) {
   ['clusters', 'cluster-count', 'points', 'points-selected'].forEach((l) =>
     map.setLayoutProperty(l, 'visibility', mode === 'pins' ? 'visible' : 'none'));
   map.setLayoutProperty('heat', 'visibility', mode === 'heat' ? 'visible' : 'none');
-  ['state-fills', 'state-lines'].forEach((l) => {
+  const modeGated = CFG.basemap === 'india' ? ['state-fills'] : ['state-fills', 'state-lines', 'state-labels'];
+  modeGated.forEach((l) => {
     if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', mode === 'states' ? 'visible' : 'none');
   });
   updateStateFill();
@@ -1121,12 +1268,35 @@ function presetDefs() {
 }
 
 function renderPresets() {
-  const el = $('presets');
-  if (!el) return;
   const f = state.filters;
-  el.innerHTML = presetDefs().map((p) =>
+  const html = presetDefs().map((p) =>
     `<button class="preset" data-from="${p.from}" data-to="${p.to}"
        aria-pressed="${f.from === p.from && f.to === p.to}">${esc(t(p.key))}</button>`).join('');
+  ['presets', 'fb-presets'].forEach((id) => { const el = $(id); if (el) el.innerHTML = html; });
+}
+
+/* The toolbar dropdowns are quick single-pick filters (the sidebar chips
+   remain the multi-select interface). '' = all; a value replaces the set. */
+function renderTopBar() {
+  const build = (el, field, allLabel) => {
+    if (!el || document.activeElement === el) return; // don't yank an open menu
+    const set = state.filters[field];
+    const opts = [`<option value="">${esc(allLabel)}</option>`];
+    if (set.size > 1) {
+      opts.push(`<option value="__multi" selected>${esc(typeof t('nSelected') === 'function' ? t('nSelected')(set.size) : set.size)}</option>`);
+    }
+    facetCounts(field).forEach(([key, n]) => {
+      const label = field === 'category' ? catLabel(key) : key;
+      const sel = set.size === 1 && set.has(key) ? ' selected' : '';
+      opts.push(`<option value="${esc(key)}"${sel}>${esc(label)} (${n})</option>`);
+    });
+    el.innerHTML = opts.join('');
+    if (!set.size) el.value = '';
+  };
+  build($('fb-category'), 'category', t('allCategories'));
+  build($('fb-state'), 'state', t('allStates'));
+  const fs = $('fb-search');
+  if (fs && document.activeElement !== fs) fs.value = state.filters.q;
 }
 
 /* ------------------------------------------------------------------
@@ -1646,6 +1816,7 @@ function render() {
   renderList();
   renderAllChips();
   renderPresets();
+  renderTopBar();
   renderCounters();
   renderLegend();
   renderTimeline();
@@ -1803,6 +1974,39 @@ function wireEvents() {
 
   $('refresh').addEventListener('click', () => refresh(true));
 
+  $('btn-back').addEventListener('click', goBack);
+
+  // Top filter bar — quick filters mirrored onto the same state.
+  $('filter-bar').addEventListener('click', (e) => {
+    const preset = e.target.closest('.preset');
+    if (!preset) return;
+    state.filters.from = preset.dataset.from;
+    state.filters.to = preset.dataset.to;
+    $('date-from').value = preset.dataset.from;
+    $('date-to').value = preset.dataset.to;
+    $('fg-date').classList.toggle('has-active', !!(preset.dataset.from || preset.dataset.to));
+    render();
+  });
+  [['fb-category', 'category'], ['fb-state', 'state']].forEach(([id, field]) => {
+    $(id).addEventListener('change', (e) => {
+      const v = e.target.value;
+      if (v === '__multi') return; // informational option, not a choice
+      const set = state.filters[field];
+      set.clear();
+      if (v) set.add(v);
+      render();
+    });
+  });
+  let fbTimer;
+  $('fb-search').addEventListener('input', (e) => {
+    clearTimeout(fbTimer);
+    fbTimer = setTimeout(() => {
+      state.filters.q = e.target.value;
+      $('search').value = e.target.value;
+      render();
+    }, 160);
+  });
+
   document.addEventListener('keydown', (e) => {
     const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
     if (e.key === 'Escape') {
@@ -1921,9 +2125,18 @@ async function init() {
   setView(state.view, false);
   wireEvents();
   initMap();
+  if (CFG.basemap === 'india') {
+    Promise.all([ensureStatesGeo(), ensureWorldGeo()]).then(() => {
+      // If the style finished loading before the geometry arrived, the
+      // style.load handler found nothing to add — add it now.
+      try { if (map && mapReady) addStateLayers(); } catch {}
+    });
+  }
   await loadGeocache();
   await refresh();
   applyHashToUI();
+  booted = true;
+  updateBackButton();
   if (CFG.refreshMs > 0) setInterval(() => refresh(), CFG.refreshMs);
 }
 

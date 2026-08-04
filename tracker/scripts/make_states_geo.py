@@ -89,8 +89,13 @@ def main():
         grouped.setdefault(f["properties"]["st_nm"], []).append(shape(f["geometry"]))
 
     states = {}
+    labels = {}
     for name, geoms in grouped.items():
         merged = unary_union(geoms).buffer(0)
+        # A guaranteed-interior label anchor (centroids of concave states
+        # can fall outside the polygon).
+        pt = merged.representative_point()
+        labels[name] = [round(pt.x, 2), round(pt.y, 2)]
         gj = mapping(merged)
         states[name] = simplify_geom(json.loads(json.dumps(gj)))
 
@@ -98,7 +103,7 @@ def main():
         "type": "FeatureCollection",
         "features": [
             {"type": "Feature",
-             "properties": {"state": name},
+             "properties": {"state": name, "lx": labels[name][0], "ly": labels[name][1]},
              "geometry": {"type": "MultiPolygon", "coordinates": polys}}
             for name, polys in sorted(states.items())
         ],
