@@ -1,0 +1,595 @@
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+
+<style>
+/* ============================================================
+   JEM · August 2026 monthly article
+   Built on the JEM design system (tokens-colors / tokens-typography).
+   All rules are scoped to .jem-article so this block can be pasted
+   into a WordPress Custom HTML block without touching theme styles.
+   ============================================================ */
+
+.jem-article {
+  /* Brand core */
+  --jem-indigo:#2A2360; --jem-saffron:#DD9533; --jem-saffron-text:#9A6416;
+  --jem-green:#5BAA47; --jem-white:#FFFFFF;
+  --jem-indigo-900:#1A1540; --jem-indigo-800:#221C52; --jem-indigo-600:#383074;
+  --jem-indigo-500:#4A4191; --jem-indigo-400:#6A61AD; --jem-indigo-300:#9992CC;
+  --jem-ink:#1C1A2E; --jem-slate:#5B5870; --jem-mist:#848096; --jem-mist-text:#6E6A80;
+  --jem-faint:#A6A2B6; --jem-line:#ECEAF3; --jem-page:#F7F6FA;
+  --jem-saffron-tint:#FBF1E1; --jem-green-tint:#EBF4E8; --jem-indigo-tint:#ECEAF3;
+
+  /* Semantic roles */
+  --bg:var(--jem-page); --surface:var(--jem-white); --surface-sunken:var(--jem-page);
+  --surface-dark:var(--jem-indigo);
+  --ink-strong:var(--jem-indigo); --ink:var(--jem-ink); --ink-2:var(--jem-slate);
+  --ink-muted:var(--jem-mist-text); --ink-faint:var(--jem-faint);
+  --on-dark:#FFFFFF; --on-dark-muted:#CBC8DD; --on-dark-faint:#8480A0;
+  --line:rgba(42,35,96,0.14); --line-strong:rgba(42,35,96,0.22);
+  --rule:var(--jem-indigo);
+  --focus:var(--jem-saffron); --focus-ink:var(--jem-saffron-text);
+  --positive:var(--jem-green);
+  --track:#E3E0EE;
+
+  --font-sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+
+  --measure:34rem;
+  --wide:62rem;
+
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Dark: the default "system" state stamps nothing, so guard on prefers-color-scheme
+   and let an explicit light choice win. */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .jem-article{
+    --bg:#131126; --surface:#1B1834; --surface-sunken:#100E20; --surface-dark:#0D0B1C;
+    --ink-strong:#CFC9F2; --ink:#E6E3F2; --ink-2:#ADA8C6; --ink-muted:#9791B4;
+    --ink-faint:#7B7599;
+    --line:rgba(207,201,242,0.16); --line-strong:rgba(207,201,242,0.28);
+    --rule:#6A61AD;
+    --focus:#E8A94D; --focus-ink:#E8A94D; --positive:#7CC468;
+    --track:#2A2647;
+    --jem-saffron-tint:#2C2416; --jem-green-tint:#182A16; --jem-indigo-tint:#221E40;
+    --jem-indigo-300:#8A82C4; --jem-indigo-400:#6A61AD;
+    --on-dark:#FFFFFF; --on-dark-muted:#CBC8DD;
+  }
+}
+:root[data-theme="dark"] .jem-article{
+  --bg:#131126; --surface:#1B1834; --surface-sunken:#100E20; --surface-dark:#0D0B1C;
+  --ink-strong:#CFC9F2; --ink:#E6E3F2; --ink-2:#ADA8C6; --ink-muted:#9791B4;
+  --ink-faint:#7B7599;
+  --line:rgba(207,201,242,0.16); --line-strong:rgba(207,201,242,0.28);
+  --rule:#6A61AD;
+  --focus:#E8A94D; --focus-ink:#E8A94D; --positive:#7CC468;
+  --track:#2A2647;
+  --jem-saffron-tint:#2C2416; --jem-green-tint:#182A16; --jem-indigo-tint:#221E40;
+  --jem-indigo-300:#8A82C4; --jem-indigo-400:#6A61AD;
+  --on-dark:#FFFFFF; --on-dark-muted:#CBC8DD;
+}
+
+body{background:#F7F6FA;margin:0;}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body{background:#131126;} }
+:root[data-theme="dark"] body{background:#131126;}
+
+.jem-article *{box-sizing:border-box;}
+.jem-article :focus-visible{outline:3px solid var(--focus);outline-offset:3px;}
+
+/* ---------- layout ---------- */
+.jem-article .wrap{max-width:var(--wide);margin:0 auto;padding:0 1.5rem;}
+.jem-article .col{max-width:var(--measure);}
+.jem-article section{padding:3.25rem 0;border-top:1px solid var(--line);}
+.jem-article section:first-of-type{border-top:0;}
+.jem-article .stack{display:flex;flex-direction:column;gap:1.15rem;}
+
+/* ---------- type ---------- */
+.jem-article h1,.jem-article h2,.jem-article h3,.jem-article h4{
+  font-family:var(--font-sans);color:var(--ink-strong);
+  margin:0;text-wrap:balance;letter-spacing:-0.01em;
+}
+.jem-article h1{font-weight:900;font-size:clamp(2.4rem,6.2vw,4.1rem);line-height:1.0;}
+.jem-article h2{font-weight:800;font-size:clamp(1.5rem,3vw,2rem);line-height:1.12;}
+.jem-article h3{font-weight:700;font-size:1.2rem;line-height:1.25;}
+.jem-article p{margin:0;}
+.jem-article a{color:var(--ink-strong);text-decoration-thickness:1px;text-underline-offset:3px;}
+
+.jem-article .kicker{
+  font-family:var(--font-sans);font-weight:700;font-size:0.6875rem;
+  letter-spacing:0.16em;text-transform:uppercase;color:var(--focus-ink);margin:0;
+}
+.jem-article .kicker--quiet{color:var(--ink-muted);}
+.jem-article .lede{font-size:1.28rem;line-height:1.5;color:var(--ink-2);}
+.jem-article .note{font-family:var(--font-sans);font-size:0.8125rem;line-height:1.55;color:var(--ink-muted);}
+
+/* the signature tricolour rule */
+.jem-article .rule{height:4px;width:88px;
+  background:linear-gradient(90deg,var(--jem-saffron) 50%,var(--jem-green) 50%);}
+
+/* ---------- masthead ---------- */
+.jem-article .masthead{background:var(--surface-dark);color:var(--on-dark);padding:3.5rem 0 3rem;}
+.jem-article .masthead h1{color:#fff;}
+.jem-article .masthead .lede{color:var(--on-dark-muted);max-width:36rem;}
+.jem-article .masthead .kicker{color:var(--jem-saffron);}
+.jem-article .byline{
+  font-family:var(--font-sans);font-size:0.8125rem;color:var(--on-dark-faint);
+  display:flex;flex-wrap:wrap;gap:0.4rem 1.4rem;
+}
+
+/* ---------- headline figures ---------- */
+.jem-article .figures{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+  gap:1px;background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.16);
+  margin-top:2.25rem;
+}
+.jem-article .fig{background:var(--surface-dark);padding:1.1rem 1.15rem 1.25rem;}
+.jem-article .fig b{
+  display:block;font-family:var(--font-sans);font-weight:800;font-size:2.5rem;
+  line-height:1;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;
+}
+.jem-article .fig--focus b{color:var(--jem-saffron);}
+.jem-article .fig span{
+  display:block;margin-top:0.5rem;font-family:var(--font-sans);font-size:0.75rem;
+  line-height:1.35;color:var(--on-dark-muted);
+}
+
+/* ---------- charts ---------- */
+.jem-article figure{margin:2rem 0 0;}
+.jem-article figcaption{
+  font-family:var(--font-sans);font-size:0.75rem;line-height:1.5;color:var(--ink-muted);
+  margin-top:0.9rem;max-width:34rem;
+}
+.jem-article .chart-title{
+  font-family:var(--font-sans);font-weight:700;font-size:0.8125rem;
+  letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-2);
+  margin:0 0 1.1rem;
+}
+.jem-article .bars{display:flex;flex-direction:column;gap:0.55rem;max-width:38rem;}
+.jem-article .bar{display:grid;grid-template-columns:8.5rem 1fr 3.4rem;align-items:center;gap:0.75rem;}
+.jem-article .bar dt,.jem-article .bar .lab{
+  font-family:var(--font-sans);font-size:0.8125rem;color:var(--ink-2);
+  text-align:right;line-height:1.25;margin:0;
+}
+.jem-article .bar dd{margin:0;}
+.jem-article .bar .track{background:var(--track);height:20px;border-radius:0 4px 4px 0;overflow:hidden;}
+.jem-article .bar .fill{
+  height:20px;background:var(--jem-indigo-400);border-radius:0 4px 4px 0;
+  display:block;min-width:2px;
+}
+.jem-article .bar--focus .fill{background:var(--jem-saffron);}
+.jem-article .bar .val{
+  font-family:var(--font-sans);font-size:0.8125rem;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin:0;
+}
+.jem-article .bar--focus .val{color:var(--focus-ink);}
+
+/* cascade */
+.jem-article .cascade{display:flex;flex-direction:column;gap:2px;max-width:40rem;}
+.jem-article .step{display:grid;grid-template-columns:1fr;gap:0;}
+.jem-article .step .band{
+  color:#fff;font-family:var(--font-sans);padding:0.7rem 0.95rem;
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  border-radius:0 4px 4px 0;
+}
+.jem-article .step .band strong{font-weight:700;font-size:0.875rem;}
+.jem-article .step .band em{font-style:normal;font-weight:800;font-size:1.05rem;font-variant-numeric:tabular-nums;}
+.jem-article .s1 .band{background:var(--jem-indigo);width:100%;}
+.jem-article .s2 .band{background:var(--jem-indigo-500);width:37.8%;min-width:12rem;}
+.jem-article .s3 .band{background:var(--jem-indigo-400);width:20%;min-width:12rem;}
+.jem-article .s4 .band{background:var(--jem-saffron);color:#2A2360;width:14%;min-width:12rem;}
+.jem-article .step .cap{
+  font-family:var(--font-sans);font-size:0.75rem;color:var(--ink-muted);
+  padding:0.3rem 0 0.65rem 0.1rem;
+}
+
+/* ---------- case cards ---------- */
+.jem-article .cases{display:grid;gap:1px;background:var(--line-strong);border:1px solid var(--line-strong);margin-top:2rem;}
+.jem-article .case{background:var(--surface);padding:1.6rem 1.5rem;display:flex;flex-direction:column;gap:0.7rem;}
+.jem-article .case-meta{
+  font-family:var(--font-sans);font-size:0.6875rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--ink-muted);
+  display:flex;flex-wrap:wrap;gap:0.35rem 0.9rem;
+}
+.jem-article .case p{font-size:1rem;line-height:1.6;}
+.jem-article .case .issue{
+  font-family:var(--font-sans);font-size:0.8125rem;line-height:1.5;color:var(--ink-2);
+  border-left:3px solid var(--focus);padding-left:0.85rem;margin-top:0.2rem;
+}
+.jem-article .status{
+  display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--font-sans);
+  font-size:0.6875rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  padding:0.25rem 0.55rem;border-radius:3px;
+}
+.jem-article .status--action{background:var(--jem-green-tint);color:var(--positive);border:1px solid var(--positive);}
+.jem-article .status--none{background:var(--jem-saffron-tint);color:var(--focus-ink);border:1px solid var(--focus);}
+@media (min-width:52rem){
+  .jem-article .cases{grid-template-columns:1fr 1fr;}
+  .jem-article .case--wide{grid-column:1 / -1;}
+  .jem-article .case--wide .issue{max-width:44rem;}
+}
+
+/* ---------- season table ---------- */
+.jem-article .scroll{overflow-x:auto;margin-top:1.75rem;}
+.jem-article table{border-collapse:collapse;width:100%;min-width:34rem;font-family:var(--font-sans);font-size:0.8125rem;}
+.jem-article th{
+  text-align:left;font-weight:700;font-size:0.6875rem;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--ink-muted);padding:0 0.7rem 0.6rem 0;
+  border-bottom:2px solid var(--rule);white-space:nowrap;
+}
+.jem-article td{padding:0.6rem 0.7rem 0.6rem 0;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top;}
+.jem-article td:first-child{color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.jem-article tbody tr:nth-child(even) td{background:var(--surface-sunken);}
+
+/* ---------- pull quote ---------- */
+.jem-article .pull{
+  border-top:3px solid var(--focus);border-bottom:1px solid var(--line);
+  padding:1.5rem 0;margin:2.25rem 0;max-width:36rem;
+}
+.jem-article .pull p{font-size:1.35rem;line-height:1.42;color:var(--ink-strong);font-weight:400;}
+
+/* ---------- demolition list ---------- */
+.jem-article .places{list-style:none;padding:0;margin:1.75rem 0 0;display:grid;gap:1px;
+  background:var(--line-strong);border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line-strong);}
+.jem-article .places li{background:var(--surface);padding:0.8rem 0 0.8rem 0.9rem;
+  display:grid;grid-template-columns:9rem 1fr;gap:0.4rem 1rem;align-items:baseline;}
+.jem-article .places b{font-family:var(--font-sans);font-size:0.8125rem;font-weight:700;color:var(--ink-strong);}
+.jem-article .places span{font-family:var(--font-sans);font-size:0.8125rem;color:var(--ink-2);line-height:1.45;}
+@media (max-width:34rem){ .jem-article .places li{grid-template-columns:1fr;} }
+
+/* ---------- recommendations ---------- */
+.jem-article .asks{display:grid;gap:1.5rem;margin-top:2rem;}
+@media (min-width:46rem){ .jem-article .asks{grid-template-columns:1fr 1fr;} }
+.jem-article .ask h3{font-size:0.8125rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--focus-ink);}
+.jem-article .ask ul{margin:0.75rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:0.5rem;}
+.jem-article .ask li{font-size:0.975rem;line-height:1.55;color:var(--ink-2);}
+
+/* ---------- method / footer ---------- */
+.jem-article .method{background:var(--surface);border:1px solid var(--line-strong);padding:1.6rem 1.5rem;margin-top:2rem;}
+.jem-article .method .stack{gap:0.85rem;}
+.jem-article .colophon{background:var(--surface-dark);color:var(--on-dark-muted);padding:2.5rem 0;margin-top:3rem;}
+.jem-article .colophon .kicker{color:var(--jem-saffron);}
+.jem-article .colophon p{font-family:var(--font-sans);font-size:0.875rem;line-height:1.6;max-width:34rem;}
+
+@media (prefers-reduced-motion: no-preference){
+  .jem-article .fill{transition:width .4s ease;}
+}
+</style>
+
+<article class="jem-article">
+
+  <header class="masthead">
+    <div class="wrap stack">
+      <p class="kicker">Monthly Documentation Report · August 2026</p>
+      <h1>The Accountability Gap</h1>
+      <div class="rule" aria-hidden="true"></div>
+      <p class="lede">In August, JEM documented 98 hate-related incidents against minority communities across 17 states and union territories. In five of them — one in twenty — the record shows anyone was arrested.</p>
+      <p class="byline"><span>Justice and Empowerment of Minorities</span><span>An initiative of Jamiat Ulama-i-Hind</span></p>
+
+      <div class="figures">
+        <div class="fig"><b>98</b><span>incidents documented</span></div>
+        <div class="fig"><b>17</b><span>states &amp; union territories</span></div>
+        <div class="fig"><b>10</b><span>with a confirmed FIR</span></div>
+        <div class="fig fig--focus"><b>5</b><span>with a confirmed arrest</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">What the month looked like</p>
+        <h2>Ninety-eight entries, and the distance between the first number and the last</h2>
+        <p>Every month, JEM's documentation team assembles a record: what happened, where, to whom, who was named, and what — if anything — the state did about it. August 2026 produced 98 entries. They span the whole range of what the database is built to hold, from a slogan shouted at a shopfront to a man beaten to death in front of his tied-up parents.</p>
+        <p>Read one at a time, these are 98 separate misfortunes. Read together, they describe a sequence that repeats with unsettling regularity: rhetoric, then a crowd, then a hand on someone's collar, and then — often within days — a municipal notice or a bulldozer arriving to finish what the crowd began. The month's most important finding is not any single case. It is how rarely that sequence met any recorded institutional resistance.</p>
+      </div>
+
+      <figure>
+        <p class="chart-title">Where the incidents were documented</p>
+        <dl class="bars">
+          <div class="bar bar--focus"><dt>Uttar Pradesh</dt><dd class="track"><span class="fill" style="width:100%"></span></dd><dd class="val">44</dd></div>
+          <div class="bar"><dt>Delhi</dt><dd class="track"><span class="fill" style="width:20.5%"></span></dd><dd class="val">9</dd></div>
+          <div class="bar"><dt>West Bengal</dt><dd class="track"><span class="fill" style="width:15.9%"></span></dd><dd class="val">7</dd></div>
+          <div class="bar"><dt>Uttarakhand</dt><dd class="track"><span class="fill" style="width:13.6%"></span></dd><dd class="val">6</dd></div>
+          <div class="bar"><dt>Madhya Pradesh</dt><dd class="track"><span class="fill" style="width:11.4%"></span></dd><dd class="val">5</dd></div>
+          <div class="bar"><dt>Maharashtra</dt><dd class="track"><span class="fill" style="width:11.4%"></span></dd><dd class="val">5</dd></div>
+          <div class="bar"><dt>Haryana</dt><dd class="track"><span class="fill" style="width:9.1%"></span></dd><dd class="val">4</dd></div>
+          <div class="bar"><dt>Bihar</dt><dd class="track"><span class="fill" style="width:9.1%"></span></dd><dd class="val">4</dd></div>
+          <div class="bar"><dt>Rajasthan</dt><dd class="track"><span class="fill" style="width:4.5%"></span></dd><dd class="val">2</dd></div>
+          <div class="bar"><dt>Jharkhand</dt><dd class="track"><span class="fill" style="width:4.5%"></span></dd><dd class="val">2</dd></div>
+          <div class="bar"><dt>Jammu &amp; Kashmir</dt><dd class="track"><span class="fill" style="width:4.5%"></span></dd><dd class="val">2</dd></div>
+          <div class="bar"><dt>Online</dt><dd class="track"><span class="fill" style="width:4.5%"></span></dd><dd class="val">2</dd></div>
+          <div class="bar"><dt>Seven others</dt><dd class="track"><span class="fill" style="width:15.9%"></span></dd><dd class="val">7</dd></div>
+        </dl>
+        <figcaption>Punjab, Odisha, Kerala, Telangana, Karnataka and Assam recorded one case each. Uttar Pradesh accounted for 44.9% of the month's documentation; together with Delhi, West Bengal and Uttarakhand it accounted for 67.3%.</figcaption>
+      </figure>
+
+      <div class="col stack" style="margin-top:2.25rem;">
+        <p>Nearly one in every two incidents documented anywhere in India in August came from a single state. That concentration is worth stating carefully. It is not, on its own, proof that Uttar Pradesh is uniquely violent; documentation follows the networks that report to it, and JEM's local units are dense there. But the shape of the Uttar Pradesh entries argues against dismissing it as an artefact of reporting. The state's 44 cases cover every category the database tracks — speech, assault, attacks on mosques and madrasas, economic exclusion, demolition, and alleged police inaction. A reporting artefact produces more of one thing. This produces more of everything.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">The shape of the harm</p>
+        <h2>Most of it never became a headline, and most of it was not a beating</h2>
+        <p>The largest category was not violence. It was speech: 37 cases of hate speech, communal slogans, threats, calls for people to leave the country, and rhetoric casting Muslims as infiltrators. Violence — assault, murder, vandalism, sexual violence — accounted for 27. Together the two make up roughly two-thirds of the month.</p>
+      </div>
+
+      <figure>
+        <p class="chart-title">What was documented, by category</p>
+        <dl class="bars">
+          <div class="bar bar--focus"><dt>Acts of Hate</dt><dd class="track"><span class="fill" style="width:100%"></span></dd><dd class="val">37</dd></div>
+          <div class="bar"><dt>Acts of Violence</dt><dd class="track"><span class="fill" style="width:73%"></span></dd><dd class="val">27</dd></div>
+          <div class="bar"><dt>Religious spaces</dt><dd class="track"><span class="fill" style="width:29.7%"></span></dd><dd class="val">11</dd></div>
+          <div class="bar"><dt>Discrimination</dt><dd class="track"><span class="fill" style="width:29.7%"></span></dd><dd class="val">11</dd></div>
+          <div class="bar"><dt>State discrimination</dt><dd class="track"><span class="fill" style="width:16.2%"></span></dd><dd class="val">6</dd></div>
+          <div class="bar"><dt>Police atrocities</dt><dd class="track"><span class="fill" style="width:16.2%"></span></dd><dd class="val">6</dd></div>
+        </dl>
+        <figcaption>Six of JEM's seven documentation categories were populated in August. Shares: 37.8%, 27.6%, 11.2%, 11.2%, 6.1%, 6.1%.</figcaption>
+      </figure>
+
+      <div class="col stack" style="margin-top:2.25rem;">
+        <p>That ordering matters more than it might appear. A database that recorded only bodies and broken windows would miss the part of the month that did most of the work — the part that made the violence thinkable, locally acceptable, and in several cases explicitly announced in advance. In the cases below, speech is not a commentary on the violence. It is the first step of it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">The central finding</p>
+        <h2>From 98 incidents to 5 arrests</h2>
+        <p>The single most consequential number in this month's record is not a count of harm. It is a count of response. Of 98 documented incidents, a First Information Report was confirmed in 10. Arrests were confirmed in 5.</p>
+      </div>
+
+      <figure>
+        <div class="cascade">
+          <div class="step s1"><div class="band"><strong>Incidents documented</strong><em>98</em></div><p class="cap">Across 17 states and union territories.</p></div>
+          <div class="step s2"><div class="band"><strong>Classified as Acts of Hate</strong><em>37</em></div><p class="cap">Speech, threats, slogans, incitement — 37.8%.</p></div>
+          <div class="step s3"><div class="band"><strong>Confirmed FIR registered</strong><em>10</em></div><p class="cap">10.2% of the month's documentation.</p></div>
+          <div class="step s4"><div class="band"><strong>Confirmed arrests</strong><em>5</em></div><p class="cap">5.1%. One case in twenty.</p></div>
+        </div>
+        <figcaption>Each band is drawn to its share of the 98 documented incidents. The stages are not strictly nested — an arrest can follow from a case in any category — but the narrowing is the finding.</figcaption>
+      </figure>
+
+      <div class="col stack" style="margin-top:2.25rem;">
+        <p>This figure has to be read with discipline, and JEM states its limit plainly: the absence of a confirmed FIR in our record does not prove that no FIR was registered. It proves that none could be confirmed with the information available at the time of documentation. Police records are not published; many of these incidents were never reported by any outlet that would follow up. What the number establishes is narrower and still serious — that <em>verifiable</em> accountability was the exception, not the rule.</p>
+        <p>Even so, the exception has a floor set by law. In <em>Lalita Kumari v. Government of Uttar Pradesh</em> (2014), a Constitution Bench held that registering an FIR on information disclosing a cognizable offence is mandatory, not discretionary — now Section 173 of the Bharatiya Nagarik Suraksha Sanhita. In <em>Tehseen S. Poonawalla v. Union of India</em> (2018), the Supreme Court directed every state to appoint a district nodal officer to prevent vigilante violence, register FIRs in lynching cases without exception, and fast-track those trials. Those directions bind all state authorities under Article 141. In October 2023 the Court itself noted that compliance remained incomplete and asked states for year-wise data on FIRs and chargesheets filed since 2018. August 2026's numbers are properly read against that unfinished mandate, not as a vague shortfall.</p>
+      </div>
+
+      <div class="pull">
+        <p>98 documented incidents. 37 acts of hate. 10 confirmed FIRs. 5 confirmed arrests. The distance between the first number and the last is the story of August 2026.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">Five cases</p>
+        <h2>How the month worked, one case at a time</h2>
+        <p>These five were selected not because they are the worst, but because each demonstrates a different mechanism the dataset keeps repeating: the mob acting on an unproven allegation; vigilante pressure completed by the state; speech that escalates into a named threat; ridicule staged as patriotism; and coercion that produced no recorded response at all.</p>
+      </div>
+
+      <div class="cases">
+
+        <div class="case">
+          <p class="case-meta"><span>4 August</span><span>Chatra, Jharkhand</span></p>
+          <h3>An unverified allegation, and a mob of 150</h3>
+          <p>Mohammed Imroze was attacked and killed by a crowd reported at 100 to 150 people, after an allegation involving a minor that had not been — and has not since been — judicially established. The mob entered the family home, tied up his parents, and beat him with sticks and stones. He died of his injuries.</p>
+          <p>The FIR named 56 accused; 10 people were detained. Four police personnel were suspended over allegations that they were present and did not intervene, and an investigation into their conduct was opened.</p>
+          <p><span class="status status--action">FIR · 10 detained</span></p>
+          <p class="issue">If proven, a killing by five or more persons on grounds of the victim's community falls under Section 103(2) BNS — a provision with no IPC antecedent, written for precisely this fact pattern. Whether investigators invoke it, rather than the general murder provision, is the thing to watch.</p>
+        </div>
+
+        <div class="case">
+          <p class="case-meta"><span>8 August</span><span>Baheri, Bareilly, UP</span></p>
+          <h3>A biryani shop, and four kinds of pressure in sequence</h3>
+          <p>Mohammad Salman sold chicken biryani. During Sawan, activists linked to Bajrang Dal and the VHP objected to the sale of non-vegetarian food and confronted him. Police detained him. Municipal authorities then demolished part of his shop as unauthorised construction.</p>
+          <p>Four distinct forms of pressure — religious vigilantism, food-based economic targeting, police detention and municipal demolition — arrived on the same man within days, each apparently taking up where the last left off.</p>
+          <p><span class="status status--none">No confirmed arrest of those who confronted him</span></p>
+          <p class="issue">This is the month's clearest illustration of a pattern JEM has flagged repeatedly: administrative action completing an outcome that vigilante pressure sought directly. Article 19(1)(g) protects the right to carry on a trade; the November 2024 demolition directions govern how the shop could lawfully have been touched.</p>
+        </div>
+
+        <div class="case">
+          <p class="case-meta"><span>8 August</span><span>Ghaziabad, UP</span></p>
+          <h3>A ₹11-lakh bounty, announced on video</h3>
+          <p>An activist identified as Ayush Tyagi allegedly announced a bounty of ₹11 lakh against the cleric Maulana Sajid Rashidi in a video that circulated widely, amid a controversy connected to the Kanwar Yatra. Separately, Hindu Raksha Dal is recorded as having threatened violence and attempted trespass against the same person.</p>
+          <p><span class="status status--none">No confirmed FIR in the record</span></p>
+          <p class="issue">A public price on a named person's head is not ambient hostility. It is criminal intimidation under Section 351 BNS, and — because it travelled by video — squarely within the "electronic communication" ground the BNS added when it replaced Section 153A IPC.</p>
+        </div>
+
+        <div class="case">
+          <p class="case-meta"><span>August</span><span>Gonda, UP</span></p>
+          <h3>Burqas as costume, on Independence Day</h3>
+          <p>Students at a school in Gonda were made to perform in burqas and niqabs during an Independence Day programme, dancing to songs described as vulgar. Video circulated and drew criticism. Authorities subsequently found the school lacked official recognition and acted on that basis.</p>
+          <p><span class="status status--none">Action taken on recognition, not on the content</span></p>
+          <p class="issue">The legal hook here is thin; the pattern is not. An item of Muslim women's dress used as a comic prop, on the day meant to mark a shared nationhood, belongs to a recurring theme in this month's record — minority identity present at the national celebration as spectacle rather than as a participant.</p>
+        </div>
+
+        <div class="case case--wide">
+          <p class="case-meta"><span>August</span><span>Bhubaneswar, Odisha</span></p>
+          <h3>Made to chant, and then nothing happened</h3>
+          <p>A Muslim couple were stopped by self-styled cow vigilantes identified with Gau Raksha Dal on an accusation of transporting beef. They were reportedly humiliated and forced to chant Hindu religious slogans.</p>
+          <p><span class="status status--none">No FIR, no arrest recorded</span></p>
+          <p class="issue">Forcing a person to recite the devotions of a faith not their own is a direct violation of the freedom of conscience under Article 25. This case is in the report precisely because the record after it is empty — it is what the accountability gap looks like at the scale of two people on a road.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">A seasonal pattern</p>
+        <h2>Sixteen incidents clustered around the Kanwar Yatra and Sawan</h2>
+        <p>Sixteen of the month's 98 incidents — 16.3% — were connected to the Kanwar Yatra or the wider Sawan observance. They are not one kind of event. Across six states they include assault, forced closure of businesses, threats, two demolitions, hate speech, provocation at a mosque and property damage. What they share is a window of time in which ordinary commercial friction became communal very quickly.</p>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <caption class="note" style="text-align:left;padding-bottom:0.75rem;">The Kanwar / Sawan cluster, August 2026</caption>
+          <thead>
+            <tr><th scope="col">Date</th><th scope="col">Location</th><th scope="col">Incident</th><th scope="col">Named affiliation</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>3 Aug</td><td>Lucknow, UP</td><td>School van vandalised</td><td>Kanwar participants</td></tr>
+            <tr><td>3 Aug</td><td>Faridabad, HR</td><td>Sikh chicken vendor pressured to close</td><td>Gau Raksha Dal</td></tr>
+            <tr><td>4 Aug</td><td>Rewari, HR</td><td>Muslim man assaulted in police presence</td><td>Kanwariyas</td></tr>
+            <tr><td>4 Aug</td><td>Haryana</td><td>Food vendor threatened over non-veg sale</td><td>Cow vigilantes</td></tr>
+            <tr><td>7 Aug</td><td>Ghaziabad, UP</td><td>Chicken transporter assaulted</td><td>Bajrang Dal</td></tr>
+            <tr><td>8 Aug</td><td>Baheri, UP</td><td>Salman detained, shop demolished</td><td>Bajrang Dal</td></tr>
+            <tr><td>8 Aug</td><td>Deoband, UP</td><td>Threats at Darul Uloom Deoband</td><td>Hindu Raksha Dal</td></tr>
+            <tr><td>8 Aug</td><td>Ghaziabad, UP</td><td>Bounty call against Maulana Rashidi</td><td>Kanwariyas</td></tr>
+            <tr><td>8 Aug</td><td>Ghaziabad, UP</td><td>Threat and trespass against the same cleric</td><td>Hindu Raksha Dal</td></tr>
+            <tr><td>9 Aug</td><td>Varanasi, UP</td><td>12 meat, chicken and fish shops actioned</td><td>State administration</td></tr>
+            <tr><td>10 Aug</td><td>Mainpuri, UP</td><td>Egg vendors and hotels forced to close</td><td>Gau Raksha Dal</td></tr>
+            <tr><td>10 Aug</td><td>Deoband, UP</td><td>Meat vendor economically targeted</td><td>Bajrang Dal</td></tr>
+            <tr><td>10 Aug</td><td>Khandwa, MP</td><td>Provocative acts toward a mosque</td><td>Hindutva-aligned group</td></tr>
+            <tr><td>11 Aug</td><td>Delhi</td><td>Chicken stall threatened with arson</td><td>Rashtriya Hindu Veer Sena</td></tr>
+            <tr><td>11 Aug</td><td>Gaya, Bihar</td><td>Genocidal hate speech against Muslims</td><td>Kanwariyas</td></tr>
+            <tr><td>27 Aug</td><td>Deoghar, JH</td><td>Truck driver assaulted over Kanwar damage</td><td>Kanwariyas</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col stack" style="margin-top:2.25rem;">
+        <p>Two things stand out. The first is that no single organisation dominates this cluster: four cases involve Kanwariyas, three Bajrang Dal, two Gau Raksha Dal, two Hindu Raksha Dal, and one the state administration itself. Responsibility is diffuse — which is harder to prosecute, and therefore makes the state's independent duty to register and investigate more important, not less.</p>
+        <p>The second is what was being enforced. Cow protection is the familiar frame, but the targets here were chicken, biryani, eggs, fish and hotel kitchens. A dietary observance kept voluntarily by one community was, for several weeks, imposed as a rule on the livelihoods of another. That is the shift worth recording: not a dispute about cattle, but a claim to regulate what a neighbour may sell.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">Administrative action</p>
+        <h2>Seven demolitions, and the standard they must be measured against</h2>
+        <p>August recorded demolition or anti-encroachment action affecting Muslim businesses, religious structures and educational institutions in seven locations.</p>
+      </div>
+
+      <ul class="places">
+        <li><b>Mussoorie, UK</b><span>A disputed religious structure</span></li>
+        <li><b>Baheri, Bareilly, UP</b><span>Mohammad Salman's biryani shop, days after vigilante pressure and police detention</span></li>
+        <li><b>Varanasi, UP</b><span>Twelve meat, chicken and fish shops</span></li>
+        <li><b>Moradabad, UP</b><span>Portions of M.J.P. Inter College</span></li>
+        <li><b>Siddharthnagar, UP</b><span>Madrasa Arabia Zia-ul-Uloom</span></li>
+        <li><b>Shahjahanpur, UP</b><span>The home of a murder accused, Sameer Idrisi</span></li>
+        <li><b>Muzaffarnagar, UP</b><span>Darul Uloom Rahmania Madrasa</span></li>
+      </ul>
+
+      <div class="col stack" style="margin-top:2.25rem;">
+        <p>On 13 November 2024, in <em>In Re: Directions in the Matter of Demolition of Structures</em>, the Supreme Court held that the executive "cannot become a judge" and punish a person by demolishing their property because they are accused — or even convicted — of an offence, and that demolishing a shared family home over one resident's alleged crime is collective punishment. The Court laid down mandatory nationwide requirements: a prior show-cause notice, the precise grounds and applicable law stated, a personal hearing, a reasoned final order, digital record-keeping on a public portal, and personal liability for non-compliant officials.</p>
+        <p>JEM does not describe every demolition in this list as unlawful, and the distinction is deliberate. Establishing a violation requires knowing whether a compliant notice, hearing and reasoned order actually preceded each demolition — facts that live in municipal files, not in news reports. The accurate description is <em>administrative demolitions affecting Muslim individuals, businesses and institutions</em>. Turning that into a legal finding is a matter of records, and JEM is filing Right to Information applications on all seven.</p>
+        <p>Two cases nonetheless present exactly the fact pattern the 2024 judgment was written to stop: the Shahjahanpur demolition of an accused person's home, and the Bareilly shop demolished in apparent sequence with the crowd that had objected to it days earlier.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">Visibility</p>
+        <h2>Four in five of these incidents were never reported in the mainstream press</h2>
+      </div>
+
+      <figure>
+        <p class="chart-title">Cases with recorded media coverage, of 98</p>
+        <dl class="bars">
+          <div class="bar"><dt>Alternative media</dt><dd class="track"><span class="fill" style="width:24.5%"></span></dd><dd class="val">24</dd></div>
+          <div class="bar bar--focus"><dt>Mainstream media</dt><dd class="track"><span class="fill" style="width:19.4%"></span></dd><dd class="val">19</dd></div>
+          <div class="bar"><dt>Muslim alt. media</dt><dd class="track"><span class="fill" style="width:9.2%"></span></dd><dd class="val">9</dd></div>
+        </dl>
+        <figcaption>Bars are drawn against the full 98 documented cases. These figures describe coverage recorded in the monitoring database during documentation — not an exhaustive census of every Indian outlet. The Muslim alternative media field was substantially unrecorded (75.5% of entries), so 9 is a floor, not an estimate.</figcaption>
+      </figure>
+
+      <div class="col stack" style="margin-top:2.25rem;">
+        <p>Nineteen cases out of 98 were recorded as receiving mainstream coverage. Alternative outlets carried slightly more, at 24. The pattern is not surprising, but it is structurally important: the incidents least likely to be seen nationally are the ones happening furthest from newsrooms, to people with the least access to them — which is also, reliably, where the accountability gap is widest.</p>
+        <p>An incident does not stop having happened because no one filmed it. But without a record it becomes unavailable to every mechanism that might act on it: a nodal officer, a compliance affidavit, a commission's suo motu notice, a lawyer looking for a pattern. Documentation is not a substitute for justice. It is the precondition for asking for it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">What we are asking for</p>
+        <h2>Four requests that follow directly from this month's record</h2>
+        <p>Each of these is a response to a specific gap identified above, and each is already grounded in an existing legal obligation rather than a new one.</p>
+      </div>
+
+      <div class="asks">
+        <div class="ask">
+          <h3>Police and district administration</h3>
+          <ul>
+            <li>Register FIRs under Section 173 BNSS wherever a complaint discloses a cognizable offence, recording written reasons for any delay, as <em>Lalita Kumari</em> requires.</li>
+            <li>Operationalise the <em>Tehseen Poonawalla</em> nodal-officer framework in the four most-affected jurisdictions — Uttar Pradesh, Delhi, West Bengal and Uttarakhand — with monthly public reporting of FIRs and chargesheets.</li>
+            <li>Assess and record whether Section 103(2) BNS applies in every identity-based killing involving five or more persons, rather than defaulting to 103(1).</li>
+            <li>Treat police presence without intervention, as alleged in Chatra, as a distinct category of institutional failure requiring departmental accountability.</li>
+          </ul>
+        </div>
+        <div class="ask">
+          <h3>Municipal and demolition authorities</h3>
+          <ul>
+            <li>Issue no demolition order without documented compliance with the notice, hearing and reasoned-order requirements of the November 2024 directions.</li>
+            <li>Publish the digital demolition-tracking portal that judgment mandates, in each district where a demolition was recorded this month.</li>
+            <li>Apply heightened scrutiny where demolition follows closely on vigilante pressure or a communal complaint.</li>
+          </ul>
+        </div>
+        <div class="ask">
+          <h3>State governments</h3>
+          <ul>
+            <li>Publish quarterly hate-crime data disaggregated by district, category and outcome — FIR, chargesheet, conviction — so the accountability gap can be independently verified rather than estimated.</li>
+            <li>Issue standing instructions on food-vending regulation during religious observance periods, distinguishing lawful regulation from vigilante-driven closure.</li>
+            <li>Extend victim compensation and rehabilitation, as <em>Tehseen Poonawalla</em> directs, in each confirmed killing, assault and demolition case.</li>
+          </ul>
+        </div>
+        <div class="ask">
+          <h3>NHRC, judiciary, media and civil society</h3>
+          <ul>
+            <li>Suo motu cognizance of the Chatra case, given the specific allegation of police presence and non-intervention, and of the demolition pattern.</li>
+            <li>Submission of district-wise compliance data to the Supreme Court's ongoing <em>Poonawalla</em> compliance proceedings.</li>
+            <li>Regional and district-level reporting partnerships in the four most-affected jurisdictions, where the 79.6% non-coverage rate is concentrated.</li>
+            <li>Continued evidentiary discipline in attributing incidents to organisations — affiliation reported only where the record names it.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="col stack">
+        <p class="kicker kicker--quiet">How this record was made</p>
+        <h2>A note on method, and on what these numbers do not say</h2>
+      </div>
+      <div class="method col">
+        <div class="stack">
+          <p class="note">JEM's documentation combines information available in the public domain with local verification. Reported incidents are assessed and categorised under seven standing categories; local Jamiat units may visit victims or affected families to verify facts and to provide counselling and assistance. Cases are reviewed by a Case Review Committee of lawyers, journalists, activists, social-media specialists and researchers.</p>
+          <p class="note"><strong>Attribution.</strong> An organisational affiliation is recorded only where the incident record specifically names it. It is never inferred from an individual's presumed ideology. In August, 26 of 98 cases (26.5%) named a Hindutva formation or aligned group — Bajrang Dal in 7, Gau Raksha Dal in 6, other named or unnamed aligned groups in 6, Hindu Raksha Dal in 4, and the VHP, Rashtriya Hindu Veer Sena and Hindu Sena in one each. Four further cases involve Kanwariyas, who are counted separately because participation in a pilgrimage is not an organisational affiliation.</p>
+          <p class="note"><strong>Legal status.</strong> "No confirmed FIR" means no FIR could be confirmed in the information available at the time of documentation. It does not mean none was registered. The same applies to arrests. This distinction is preserved throughout because a report intended for submission to statutory and judicial bodies must hold to a higher evidentiary standard than public commentary.</p>
+          <p class="note"><strong>Media fields.</strong> Coverage figures describe sources identified during documentation, not a census of Indian media. One case carries a blank media field; the Muslim alternative media field is unrecorded in 75.5% of entries.</p>
+          <p class="note"><strong>Ongoing work.</strong> RTI applications on all seven demolition cases; reconciliation of the legal-status field against detailed legal-status notes; and section-level BNS tracking, so charging patterns can be compared across months.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div class="wrap stack">
+      <p class="kicker">Justice and Empowerment of Minorities</p>
+      <p>JEM is an initiative of the Jamiat Ulama-i-Hind, working to safeguard the human rights of minorities in India and to document hate crimes and related incidents. Its work spans countering hate speech, documenting harassment and violence, promoting the rule of law, and strengthening access to justice, equal rights and citizen security.</p>
+      <p>Monthly documentation report · August 2026 · 98 incidents, 17 states and union territories, 6 categories. If you have witnessed or experienced an incident of the kind recorded here, you can report it to JEM.</p>
+      <div class="rule" aria-hidden="true"></div>
+    </div>
+  </footer>
+
+</article>
